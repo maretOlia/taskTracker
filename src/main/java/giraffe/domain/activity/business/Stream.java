@@ -1,6 +1,4 @@
-package giraffe.activities.business;
-
-import giraffe.activities.Term;
+package giraffe.domain.activity.business;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,18 +12,24 @@ public class Stream {
 
     private List<BusinessTask> backlog = new ArrayList<>();
 
-    private Term term;
+    private Long term;
 
 
-    public Stream(final Term term) {
+    public Stream(final Long term) {
         this.term = term;
     }
 
-    public Term getTerm() { return term; }
+    public Long getTerm() {
+        return term;
+    }
 
-    public void setTerm(final Term term) { this.term = term; }
+    public void setTerm(final Long term) {
+        this.term = term;
+    }
 
-    public List<BusinessTask> getBacklog() { return backlog; }
+    public List<BusinessTask> getBacklog() {
+        return backlog;
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -37,5 +41,7 @@ public class Stream {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(backlog, term); }
+    public int hashCode() {
+        return Objects.hash(backlog, term);
+    }
 }

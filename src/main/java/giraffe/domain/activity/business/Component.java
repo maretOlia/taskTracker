@@ -1,4 +1,4 @@
-package giraffe.activities.business;
+package giraffe.domain.activity.business;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +15,21 @@ final public class Component {
     private List<BusinessTask> tasks = new ArrayList<>();
 
 
-    public Component(final String name) { this.name = name; }
+    public Component(final String name) {
+        this.name = name;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public void setName(final String name) { this.name = name; }
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-    public List<BusinessTask> getTasks() { return tasks; }
+    public List<BusinessTask> getTasks() {
+        return tasks;
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -32,5 +40,7 @@ final public class Component {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(name); }
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 }

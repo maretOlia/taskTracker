@@ -6,14 +6,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot' 
+apply plugin: 'spring-boot'
 
 jar {
     baseName = 'giraffe'
@@ -26,17 +26,31 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    neo4jVersion = '2.2.1'
+    neo4jOGMVersion = '1.1.3'
+    springDataNeo4jVersion = '4.0.0.RELEASE'
+}
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter')
-    testCompile('org.springframework.boot:spring-boot-starter-test') 
+    compile('org.springframework.boot:spring-boot-starter-hateoas')
+    compile("org.springframework.data:spring-data-neo4j:${springDataNeo4jVersion}")
+    compile("org.springframework.data:spring-data-neo4j:${springDataNeo4jVersion}:tests@jar")
+    compile('com.google.guava:guava:11.0.2')
+    compile("org.neo4j:neo4j-kernel:${neo4jVersion}:tests@jar")
+    compile("org.neo4j.app:neo4j-server:${neo4jVersion}:tests@jar")
+    compile("org.neo4j:neo4j-ogm:${neo4jOGMVersion}:tests@jar")
+    compile("org.neo4j.test:neo4j-harness:${neo4jVersion}")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.hamcrest:hamcrest-all:1.3')
 }
 
 
 eclipse {
     classpath {
-         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
     }
 }
 

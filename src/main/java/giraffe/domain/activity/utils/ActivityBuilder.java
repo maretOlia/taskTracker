@@ -1,10 +1,9 @@
-package giraffe.activities.utils;
+package giraffe.domain.activity.utils;
 
-import giraffe.activities.Activity;
-import giraffe.user.User;
+import com.google.common.collect.Lists;
+import giraffe.domain.activity.Activity;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Guschcyna Olga
@@ -12,28 +11,18 @@ import java.util.Map;
  */
 abstract class ActivityBuilder<T extends ActivityBuilder> {
 
-    protected int id;
-
     protected String name;
 
     protected String comment;
 
-    protected User assignedTo;
+    protected List<String> references = Lists.newArrayList();
 
-    protected Map<String, String> links;
-
-    protected List<String> img;
+    protected List<String> img = Lists.newArrayList();
 
 
     abstract public T self();
 
     abstract public Activity build();
-
-
-    public T id(final int id) {
-        this.id = id;
-        return self();
-    }
 
     public T name(final String name) {
         this.name = name;
@@ -45,13 +34,8 @@ abstract class ActivityBuilder<T extends ActivityBuilder> {
         return self();
     }
 
-    public T assignedTo(final User assignedTo) {
-        this.assignedTo = assignedTo;
-        return self();
-    }
-
-    public T links(final Map<String, String> links) {
-        this.links = links;
+    public T links(final  List<String> links) {
+        this.references = links;
         return self();
     }
 

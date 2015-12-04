@@ -1,6 +1,6 @@
-package giraffe.activities.utils;
+package giraffe.domain.activity.utils;
 
-import giraffe.activities.business.ProgrammingTask;
+import giraffe.domain.activity.business.ProgrammingTask;
 
 /**
  * @author Guschcyna Olga
@@ -10,6 +10,7 @@ final public class ProgrammingTaskBuilder extends BusinessTaskBuilder<Programmin
 
     private ProgrammingTask.Type type = ProgrammingTask.Type.TASK;
 
+
     @Override
     public ProgrammingTaskBuilder self() {
         return this;
@@ -17,7 +18,7 @@ final public class ProgrammingTaskBuilder extends BusinessTaskBuilder<Programmin
 
     @Override
     public ProgrammingTask build() {
-        return new ProgrammingTask(id, name, comment, assignedTo, links, img, openedBy, status, priority, estimate, type);
+        return new ProgrammingTask(name, comment, references, img, status, priority, estimate, type, openedBy, assignedTo);
     }
 
     public ProgrammingTaskBuilder type(final ProgrammingTask.Type type) {

@@ -1,12 +1,9 @@
-package giraffe.activities.business;
+package giraffe.domain.activity.business;
 
-import giraffe.activities.Activity;
-import giraffe.activities.Term;
-import giraffe.user.User;
+import giraffe.domain.activity.Activity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -22,21 +19,24 @@ public class Project extends Activity {
     private List<Component> components = new ArrayList<>();
 
 
-    public Project(final int id,
-                   final String name,
+    public Project(final String name,
                    final String comment,
-                   final Term term,
-                   final User assignedTo,
-                   final Map<String, String> links,
+                   final List<String> references,
                    final List<String> img) {
-        super(id, name, comment, term, assignedTo, links, img);
+        super(name, comment, references, img);
     }
 
-    public List<BusinessTask> getBacklog() { return backlog; }
+    public List<BusinessTask> getBacklog() {
+        return backlog;
+    }
 
-    public List<Stream> getStreams() { return streams; }
+    public List<Stream> getStreams() {
+        return streams;
+    }
 
-    public List<Component> getComponents() { return components; }
+    public List<Component> getComponents() {
+        return components;
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -50,5 +50,7 @@ public class Project extends Activity {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(super.hashCode(), backlog, streams, components); }
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), backlog, streams, components);
+    }
 }

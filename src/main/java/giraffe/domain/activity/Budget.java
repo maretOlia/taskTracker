@@ -1,4 +1,7 @@
-package giraffe.activities;
+package giraffe.domain.activity;
+
+import giraffe.domain.GiraffeEntity;
+import org.neo4j.ogm.annotation.NodeEntity;
 
 import java.util.Objects;
 
@@ -6,7 +9,8 @@ import java.util.Objects;
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-final public class Budget {
+@NodeEntity
+final public class Budget extends GiraffeEntity {
 
     private double quantity;
 

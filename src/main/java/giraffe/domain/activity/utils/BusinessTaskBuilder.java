@@ -1,7 +1,7 @@
-package giraffe.activities.utils;
+package giraffe.domain.activity.utils;
 
-import giraffe.activities.business.BusinessTask;
-import giraffe.user.User;
+import giraffe.domain.activity.business.BusinessTask;
+import giraffe.domain.user.BusinessAccount;
 
 /**
  * @author Guschcyna Olga
@@ -9,17 +9,24 @@ import giraffe.user.User;
  */
 public abstract class BusinessTaskBuilder<T extends BusinessTaskBuilder> extends ActivityBuilder<T> {
 
-    protected User openedBy;
-
     protected BusinessTask.Priority priority;
 
-    protected int estimate;
+    protected Integer estimate;
 
     protected BusinessTask.Status status = BusinessTask.Status.OPEN;
 
+    protected BusinessAccount openedBy;
 
-    public T openedBy(final User openedBy) {
-        this.openedBy = openedBy;
+    protected BusinessAccount assignedTo;
+
+
+    public T assignedTo(final BusinessAccount account){
+        this.assignedTo = account;
+        return self();
+    }
+
+    public T openedBy(final BusinessAccount account){
+        this.openedBy = account;
         return self();
     }
 
@@ -33,7 +40,7 @@ public abstract class BusinessTaskBuilder<T extends BusinessTaskBuilder> extends
         return self();
     }
 
-    public T estimate(final int estimate) {
+    public T estimate(final Integer estimate) {
         this.estimate = estimate;
         return self();
     }
