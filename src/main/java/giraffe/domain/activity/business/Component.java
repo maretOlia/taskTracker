@@ -1,7 +1,5 @@
 package giraffe.domain.activity.business;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -12,11 +10,12 @@ final public class Component {
 
     private String name;
 
-    private List<BusinessTask> tasks = new ArrayList<>();
+    private Project project;
 
 
-    public Component(final String name) {
+    public Component(final String name, final Project project) {
         this.name = name;
+        this.project = project;
     }
 
     public String getName() {
@@ -27,20 +26,25 @@ final public class Component {
         this.name = name;
     }
 
-    public List<BusinessTask> getTasks() {
-        return tasks;
+    public Project getProject() {
+        return project;
+    }
+
+    public void project(final Project project) {
+        this.project = project;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Component component = (Component) o;
-        return Objects.equals(name, component.name);
+        return Objects.equals(name, component.name) &&
+                Objects.equals(project, component.project);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, project);
     }
 }

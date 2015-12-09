@@ -15,9 +15,11 @@ final public class PrivateTaskBuilder extends ActivityBuilder<PrivateTaskBuilder
 
     private PrivateAccount assignedTo;
 
-    private PrivateTask.Status status = PrivateTask.Status.OPEN;
+    private PrivateTask.TaskStatus taskStatus = PrivateTask.TaskStatus.OPEN;
 
     private PrivateTask.Type type = PrivateTask.Type.TASK;
+
+    private PrivateTask parentTask;
 
 
     @Override
@@ -25,7 +27,7 @@ final public class PrivateTaskBuilder extends ActivityBuilder<PrivateTaskBuilder
 
     @Override
     public PrivateTask build() {
-        return new PrivateTask(name, comment, references, img, status, type, term, assignedTo, openedBy);
+        return new PrivateTask(name, comment, references, img, taskStatus, type, term, assignedTo, openedBy, parentTask);
     }
 
     public PrivateTaskBuilder assignedTo(final PrivateAccount account){
@@ -38,13 +40,18 @@ final public class PrivateTaskBuilder extends ActivityBuilder<PrivateTaskBuilder
         return self();
     }
 
+    public PrivateTaskBuilder parentTask(final PrivateTask parentTask) {
+       this.parentTask = parentTask;
+        return this;
+    }
+
     public PrivateTaskBuilder term(final Long term) {
         this.term = term;
         return this;
     }
 
-    public PrivateTaskBuilder status(final PrivateTask.Status status) {
-        this.status = status;
+    public PrivateTaskBuilder status(final PrivateTask.TaskStatus taskStatus) {
+        this.taskStatus = taskStatus;
         return this;
     }
 

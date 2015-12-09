@@ -2,11 +2,8 @@ package giraffe.domain.user;
 
 import giraffe.domain.GiraffeEntity;
 import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author Guschcyna Olga
@@ -22,23 +19,13 @@ final public class User extends GiraffeEntity {
 
     private String salt;
 
-    @Relationship(type="HAS_ACCOUNT", direction = Relationship.OUTGOING)
-    private Set<Account> accounts = new HashSet<>();
 
-
-    private User(){ }
+    private User() {
+    }
 
     public User(final String login, final String password) {
         this.login = login;
         this.password = password;
-    }
-
-    public void hasAccount(final Account account) {
-        accounts.add(account);
-    }
-
-    public Set<Account> getAccounts() {
-        return accounts;
     }
 
     public String getLogin() {

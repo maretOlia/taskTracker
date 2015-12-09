@@ -30,6 +30,7 @@ public class PersistenceContext extends Neo4jConfiguration {
     @Bean
     public Neo4jServer neo4jServer() {
         return new InProcessServer();
+       // return new RemoteServer("http://localhost:7474", "neo4j", "giraffe");
     }
 
 }

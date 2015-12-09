@@ -1,8 +1,8 @@
 package giraffe.repository.user;
 
 import giraffe.domain.user.User;
+import giraffe.repository.GiraffeRepository;
 import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -10,14 +10,9 @@ import org.springframework.stereotype.Repository;
  * @version 1.0.0
  */
 @Repository
-public interface UserRepository extends GraphRepository<User> {
+public interface UserRepository extends GiraffeRepository<User> {
 
-    User findByUuid(final String uuid);
-
-    @Query("MATCH (user:User) RETURN user")
-    Iterable<User> listAllUsers();
-
-    @Query("MATCH (PrivateAccount)<-[HAS_ACCOUNT]-(user) RETURN user")
-    Iterable<User> listUsersWhoHavePrivateAccount();
+    @Query("MATCH (users:User) RETURN users")
+    Iterable<User> findAllUsers();
 
 }

@@ -15,16 +15,18 @@ final public class CommonBusinessTask extends BusinessTask {
 
 
     public CommonBusinessTask(final String name,
-                              final String comment,
-                              final List<String> references,
-                              final List<String> imgs,
-                              final Status status,
-                              final Priority priority,
-                              final int estimate,
-                              final long term,
-                              final BusinessAccount assignedTo,
-                              final BusinessAccount openedBy) {
-        super(name, comment, references, imgs, status, priority, estimate, openedBy, assignedTo);
+                           final String comment,
+                           final List<String> references,
+                           final List<String> imgs,
+                           final TaskStatus taskStatus,
+                           final Priority priority,
+                           final Integer estimate,
+                           final BusinessAccount assignedTo,
+                           final BusinessAccount openedBy,
+                           final Project project,
+                           final Component component,
+                           final Long term) {
+        super(name, comment, references, imgs, taskStatus, priority, estimate, assignedTo, openedBy, project, component);
         this.term = term;
     }
 
@@ -42,7 +44,7 @@ final public class CommonBusinessTask extends BusinessTask {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         CommonBusinessTask that = (CommonBusinessTask) o;
-        return term == that.term;
+        return Objects.equals(term, that.term);
     }
 
     @Override

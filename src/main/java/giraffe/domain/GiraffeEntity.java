@@ -14,6 +14,23 @@ public class GiraffeEntity {
 
     protected Long timeCreated;
 
+    protected Status status;
+
+
+    public enum Status {
+        ACTIVE(1), DELETED(0);
+
+        private int value;
+
+        Status(final int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
 
     public String getUuid() {
         return uuid;
@@ -31,17 +48,26 @@ public class GiraffeEntity {
         this.timeCreated = timeCreated;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(final Status status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiraffeEntity that = (GiraffeEntity) o;
         return Objects.equals(uuid, that.uuid) &&
+                Objects.equals(status, that.status) &&
                 Objects.equals(timeCreated, that.timeCreated);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, timeCreated);
+        return Objects.hash(uuid, status, timeCreated);
     }
 }

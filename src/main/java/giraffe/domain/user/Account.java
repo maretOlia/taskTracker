@@ -6,4 +6,21 @@ import giraffe.domain.GiraffeEntity;
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-abstract public class Account extends GiraffeEntity {  }
+
+public class Account extends GiraffeEntity {
+
+    protected User user;
+
+
+    public Account(final User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void user(final User user) {
+        this.user = user;
+    }
+}

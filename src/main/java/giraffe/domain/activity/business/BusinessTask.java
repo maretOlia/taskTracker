@@ -3,7 +3,6 @@ package giraffe.domain.activity.business;
 import giraffe.domain.activity.Activity;
 import giraffe.domain.user.BusinessAccount;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,7 +12,7 @@ import java.util.Objects;
  */
 public abstract class BusinessTask extends Activity {
 
-    protected Status status;
+    protected TaskStatus taskStatus;
 
     protected Priority priority;
 
@@ -23,7 +22,9 @@ public abstract class BusinessTask extends Activity {
 
     protected BusinessAccount openedBy;
 
-    protected List<BusinessTask> subTasks = new ArrayList<>();
+    protected Component component;
+
+    protected Project project;
 
 
     private BusinessTask() { }
@@ -32,26 +33,30 @@ public abstract class BusinessTask extends Activity {
                         final String comment,
                         final List<String> references,
                         final List<String> imgs,
-                        final Status status,
+                        final TaskStatus taskStatus,
                         final Priority priority,
                         final Integer estimate,
                         final BusinessAccount assignedTo,
-                        final BusinessAccount openedBy) {
+                        final BusinessAccount openedBy,
+                        final Project project,
+                        final Component component) {
         super(name, comment, references, imgs);
         this.openedBy = openedBy;
-        this.status = status;
+        this.taskStatus = taskStatus;
         this.priority = priority;
         this.estimate = estimate;
         this.openedBy = openedBy;
         this.assignedTo = assignedTo;
+        this.project = project;
+        this.component = component;
     }
 
-    public enum Status {
+    public enum TaskStatus {
         OPEN(0), IN_PROGRESS(1), DELAYED(2), DONE(3), NEEDS_REVIEW(4), CLOSED(5);
 
         private int value;
 
-        Status(final int value) {
+        TaskStatus(final int value) {
             this.value = value;
         }
 
@@ -74,6 +79,22 @@ public abstract class BusinessTask extends Activity {
         }
     }
 
+    public Component getComponent() {
+        return component;
+    }
+
+    public void component(Component component) {
+        this.component = component;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void project(Project project) {
+        this.project = project;
+    }
+
     public BusinessAccount getOpenedBy() {
         return openedBy;
     }
@@ -82,12 +103,12 @@ public abstract class BusinessTask extends Activity {
         this.openedBy = openedBy;
     }
 
-    public Status getStatus() {
-        return status;
+    public TaskStatus getTaskStatus() {
+        return taskStatus;
     }
 
-    public void setStatus(final Status status) {
-        this.status = status;
+    public void setTaskStatus(final TaskStatus taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
     public Priority getPriority() {
@@ -114,26 +135,23 @@ public abstract class BusinessTask extends Activity {
         this.assignedTo = assignedTo;
     }
 
-    public List<BusinessTask> getSubTasks() {
-        return subTasks;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         BusinessTask that = (BusinessTask) o;
-        return status == that.status &&
+        return taskStatus == that.taskStatus &&
                 priority == that.priority &&
                 Objects.equals(estimate, that.estimate) &&
                 Objects.equals(assignedTo, that.assignedTo) &&
                 Objects.equals(openedBy, that.openedBy) &&
-                Objects.equals(subTasks, that.subTasks);
+                Objects.equals(project, that.project) &&
+                Objects.equals(component, that.component);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), status, priority, estimate, assignedTo, openedBy, subTasks);
+        return Objects.hash(super.hashCode(), taskStatus, priority, estimate, assignedTo, openedBy, project, component);
     }
 }

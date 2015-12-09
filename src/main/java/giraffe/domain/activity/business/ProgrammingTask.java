@@ -18,13 +18,15 @@ final public class ProgrammingTask extends BusinessTask {
                            final String comment,
                            final List<String> references,
                            final List<String> imgs,
-                           final Status status,
+                           final TaskStatus taskStatus,
                            final Priority priority,
                            final Integer estimate,
-                           final Type type,
                            final BusinessAccount assignedTo,
-                           final BusinessAccount openedBy) {
-        super(name, comment, references, imgs, status, priority, estimate, openedBy, assignedTo);
+                           final BusinessAccount openedBy,
+                           final Project project,
+                           final Component component,
+                           final Type type) {
+        super(name, comment, references, imgs, taskStatus, priority, estimate, assignedTo, openedBy, project, component);
         this.type = type;
     }
 

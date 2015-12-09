@@ -18,7 +18,7 @@ final public class ProgrammingTaskBuilder extends BusinessTaskBuilder<Programmin
 
     @Override
     public ProgrammingTask build() {
-        return new ProgrammingTask(name, comment, references, img, status, priority, estimate, type, openedBy, assignedTo);
+        return new ProgrammingTask(name, comment, references, img, taskStatus, priority, estimate, assignedTo, openedBy, project, component, type);
     }
 
     public ProgrammingTaskBuilder type(final ProgrammingTask.Type type) {

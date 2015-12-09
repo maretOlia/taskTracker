@@ -12,19 +12,19 @@ import java.util.Collections;
  * @version 1.0.0
  */
 @Component
-public class IndexCreator {
+public class ConstraintCreator {
 
     @Autowired
     Neo4jOperations neo4jTemplate;
 
 
     @PostConstruct
-    public void createIndexes() {
+    public void createConstraints() {
         try {
-            neo4jTemplate.query("CREATE INDEX ON :GiraffeEntity(uuid)", Collections.emptyMap());
+            neo4jTemplate.query("CREATE CONSTRAINT ON (entity:GiraffeEntity) ASSERT entity.uuid IS UNIQUE", Collections.emptyMap());
             neo4jTemplate.query("CREATE CONSTRAINT ON (user:User) ASSERT user.login IS UNIQUE", Collections.emptyMap());
         } catch (Exception e) {
-           // ignore
+            // ignore
         }
     }
 

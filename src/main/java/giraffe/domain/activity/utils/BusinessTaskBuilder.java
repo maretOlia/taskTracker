@@ -1,6 +1,8 @@
 package giraffe.domain.activity.utils;
 
 import giraffe.domain.activity.business.BusinessTask;
+import giraffe.domain.activity.business.Component;
+import giraffe.domain.activity.business.Project;
 import giraffe.domain.user.BusinessAccount;
 
 /**
@@ -13,11 +15,15 @@ public abstract class BusinessTaskBuilder<T extends BusinessTaskBuilder> extends
 
     protected Integer estimate;
 
-    protected BusinessTask.Status status = BusinessTask.Status.OPEN;
+    protected BusinessTask.TaskStatus taskStatus = BusinessTask.TaskStatus.OPEN;
 
     protected BusinessAccount openedBy;
 
     protected BusinessAccount assignedTo;
+
+    protected Project project;
+
+    protected Component component;
 
 
     public T assignedTo(final BusinessAccount account){
@@ -30,13 +36,23 @@ public abstract class BusinessTaskBuilder<T extends BusinessTaskBuilder> extends
         return self();
     }
 
+    public T project(final Project project){
+        this.project = project;
+        return self();
+    }
+
+    public T component(final Component component){
+        this.component = component;
+        return self();
+    }
+
     public T priority(final BusinessTask.Priority priority) {
         this.priority = priority;
         return self();
     }
 
-    public T status(final BusinessTask.Status status) {
-        this.status = status;
+    public T status(final BusinessTask.TaskStatus taskStatus) {
+        this.taskStatus = taskStatus;
         return self();
     }
 

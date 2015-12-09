@@ -23,6 +23,6 @@ final public class CommonBusinessTaskBuilder extends BusinessTaskBuilder<CommonB
 
     @Override
     public CommonBusinessTask build() {
-        return new CommonBusinessTask(name, comment, references, img, status, priority, estimate, term, openedBy, assignedTo);
+        return new CommonBusinessTask(name, comment, references, img, taskStatus, priority, estimate, assignedTo, openedBy, project, component, term);
     }
 }

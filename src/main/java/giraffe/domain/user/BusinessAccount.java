@@ -7,4 +7,9 @@ import org.neo4j.ogm.annotation.NodeEntity;
  * @version 1.0.0
  */
 @NodeEntity
-final public class BusinessAccount extends Account { }
+final public class BusinessAccount extends Account {
+
+    public BusinessAccount(final User user) {
+        super(user);
+    }
+}
