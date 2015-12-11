@@ -9,7 +9,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 @NodeEntity
 final public class BusinessAccount extends Account {
 
-    public BusinessAccount(final User user) {
-        super(user);
+    public BusinessAccount(final String login, final String password) {
+        super(login, password);
     }
 }

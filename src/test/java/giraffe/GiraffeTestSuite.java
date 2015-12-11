@@ -1,7 +1,6 @@
 package giraffe;
 
 import giraffe.service.PrivateTaskManagementServiceTest;
-import giraffe.service.UserManagementServiceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -12,7 +11,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         ConfigurationTest.class,
-        UserManagementServiceTest.class,
+        //AccountManagementServiceTest.class,
         PrivateTaskManagementServiceTest.class
 })
 public class GiraffeTestSuite {

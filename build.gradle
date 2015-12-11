@@ -30,13 +30,16 @@ ext {
     neo4jVersion = '2.2.1'
     neo4jOGMVersion = '1.1.3'
     springDataNeo4jVersion = '4.0.0.RELEASE'
+    springSecurityVersion = '4.0.3.RELEASE'
+    springHateoasVersion = '1.3.0.RELEASE'
 }
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter')
-    compile('org.springframework.boot:spring-boot-starter-hateoas')
+    compile("org.springframework.boot:spring-boot-starter-hateoas:${springHateoasVersion}")
     compile("org.springframework.data:spring-data-neo4j:${springDataNeo4jVersion}")
     compile("org.springframework.data:spring-data-neo4j:${springDataNeo4jVersion}:tests@jar")
+    compile("org.springframework.security:spring-security-core:${springSecurityVersion}")
     compile('com.google.guava:guava:11.0.2')
     compile("org.neo4j:neo4j-kernel:${neo4jVersion}:tests@jar")
     compile("org.neo4j.app:neo4j-server:${neo4jVersion}:tests@jar")

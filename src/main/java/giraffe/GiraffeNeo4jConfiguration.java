@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.event.BeforeSaveEvent;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.server.InProcessServer;
 import org.springframework.data.neo4j.server.Neo4jServer;
+import org.springframework.data.neo4j.server.RemoteServer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.UUID;
@@ -29,7 +29,8 @@ public class GiraffeNeo4jConfiguration extends Neo4jConfiguration {
 
     @Override
     public Neo4jServer neo4jServer() {
-        return new InProcessServer(); //TODO change this to external one
+        //return new InProcessServer(); //TODO change this to external one
+        return new RemoteServer("http://localhost:7474", "neo4j", "giraffe");
     }
 
     @Override

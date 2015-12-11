@@ -22,7 +22,7 @@ public class ConstraintCreator {
     public void createConstraints() {
         try {
             neo4jTemplate.query("CREATE CONSTRAINT ON (entity:GiraffeEntity) ASSERT entity.uuid IS UNIQUE", Collections.emptyMap());
-            neo4jTemplate.query("CREATE CONSTRAINT ON (user:User) ASSERT user.login IS UNIQUE", Collections.emptyMap());
+            neo4jTemplate.query("CREATE CONSTRAINT ON (account:Account) ASSERT account.login IS UNIQUE", Collections.emptyMap());
         } catch (Exception e) {
             // ignore
         }

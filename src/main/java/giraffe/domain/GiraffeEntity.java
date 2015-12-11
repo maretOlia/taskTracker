@@ -1,20 +1,24 @@
 package giraffe.domain;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.springframework.hateoas.ResourceSupport;
+
 import java.util.Objects;
 
 /**
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-public class GiraffeEntity {
+public class GiraffeEntity extends ResourceSupport {
 
+    @JsonIgnore
     private Long id; // neo4j internal id
 
     protected String uuid;
 
     protected Long timeCreated;
 
-    protected Status status;
+    protected Status status = Status.ACTIVE;
 
 
     public enum Status {

@@ -1,4 +1,4 @@
-package giraffe.controllers;
+package giraffe.controllers.household;
 
 import giraffe.domain.activity.household.PrivateTask;
 import org.springframework.hateoas.ExposesResourceFor;

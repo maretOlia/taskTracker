@@ -9,7 +9,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 @NodeEntity
 final public class PrivateAccount extends Account {
 
-    public PrivateAccount(final User user) {
-        super(user);
+    public PrivateAccount(final String login, final String password) {
+        super(login, password);
     }
 }
