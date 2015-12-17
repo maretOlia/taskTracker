@@ -22,7 +22,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * @version 1.0.0
  */
 @Controller
-@RequestMapping("private/account/")
+@RequestMapping("/private/account")
 public class PrivateAccountController {
 
     @Autowired
@@ -31,8 +31,7 @@ public class PrivateAccountController {
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     HttpEntity<Resource<PrivateAccount>> createAccount(@RequestParam final String login, @RequestParam final String password) {
-
-        PrivateAccount account = userManagementService.createPrivateAccount(login, password);
+        final PrivateAccount account = userManagementService.createPrivateAccount(login, password);
         Resource<PrivateAccount> resource = new Resource<>(account);
         resource.add(linkTo(methodOn(PrivateAccountController.class).showAccount(account.getUuid())).withSelfRel());
         resource.add(linkTo(methodOn(PrivateAccountController.class).deleteAccount(account.getUuid())).withRel("delete"));
@@ -42,7 +41,7 @@ public class PrivateAccountController {
 
     @RequestMapping(value = "/{uuid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     HttpEntity<Resource<PrivateAccount>> showAccount(@PathVariable final String uuid) {
-        PrivateAccount privateAccount = userManagementService.findPrivateAccount(uuid);
+        final PrivateAccount privateAccount = userManagementService.findPrivateAccount(uuid);
 
         Resource<PrivateAccount> resource = new Resource<>(privateAccount);
         resource.add(linkTo(methodOn(PrivateAccountController.class).showAccount(uuid)).withSelfRel());
@@ -52,7 +51,7 @@ public class PrivateAccountController {
 
     @RequestMapping(value = "/{uuid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     HttpEntity<Resource<PrivateAccount>> deleteAccount(@PathVariable final String uuid) {
-        PrivateAccount privateAccount = userManagementService.deletePrivateAccount(uuid);
+        final PrivateAccount privateAccount = userManagementService.deletePrivateAccount(uuid);
 
         Resource<PrivateAccount> resource = new Resource<>(privateAccount);
 

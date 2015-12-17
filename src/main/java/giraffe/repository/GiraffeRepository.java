@@ -10,4 +10,5 @@ import org.springframework.data.neo4j.repository.GraphRepository;
 public interface GiraffeRepository<T extends GiraffeEntity> extends GraphRepository<T> {
 
     T findByUuid(final String uuid);
+
 }

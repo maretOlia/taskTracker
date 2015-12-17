@@ -7,11 +7,12 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 
 
 @SpringBootApplication
-@Import(GiraffeNeo4jConfiguration.class)
+@Import({GiraffeNeo4jConfiguration.class, GiraffeSecurityConfig.class})
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class GiraffeApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(GiraffeApplication.class, args);
     }
 

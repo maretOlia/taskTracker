@@ -35,8 +35,7 @@ final public class PrivateTask extends Activity {
     private PrivateTask parentTask;
 
 
-    private PrivateTask() {
-    }
+    private PrivateTask() { }
 
     public PrivateTask(final String name,
                        final String comment,
@@ -160,4 +159,5 @@ final public class PrivateTask extends Activity {
     public int hashCode() {
         return Objects.hash(super.hashCode(), taskStatus, type, term, openedBy, assignedTo, sharedWith);
     }
+
 }

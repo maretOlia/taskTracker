@@ -44,4 +44,5 @@ public class Stream {
     public int hashCode() {
         return Objects.hash(backlog, term);
     }
+
 }

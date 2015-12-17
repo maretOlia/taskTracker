@@ -73,7 +73,7 @@ public class PrivateTaskManagementService {
 
     @Transactional
     public PrivateTask sharePrivateTask(final List<PrivateAccount> accountsToShareWith, final String taskUuid) {
-        PrivateTask task = privateTaskRepository.findByUuid(taskUuid);
+        final PrivateTask task = privateTaskRepository.findByUuid(taskUuid);
 
         accountsToShareWith.forEach(task::shareWith);
 

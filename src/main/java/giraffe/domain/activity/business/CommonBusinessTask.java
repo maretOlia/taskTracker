@@ -51,4 +51,5 @@ final public class CommonBusinessTask extends BusinessTask {
     public int hashCode() {
         return Objects.hash(super.hashCode(), term);
     }
+
 }

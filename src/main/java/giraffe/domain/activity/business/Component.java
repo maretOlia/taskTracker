@@ -47,4 +47,5 @@ final public class Component {
     public int hashCode() {
         return Objects.hash(name, project);
     }
+
 }

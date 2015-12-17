@@ -74,4 +74,5 @@ public class GiraffeEntity extends ResourceSupport {
     public int hashCode() {
         return Objects.hash(uuid, status, timeCreated);
     }
+
 }

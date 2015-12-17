@@ -12,4 +12,6 @@ public interface PrivateAccountRepository extends AccountRepository<PrivateAccou
     @Query("MATCH (account:PrivateAccount)-[:USER]->(:User {uuid:{0}}) RETURN account")
     PrivateAccount findByUserUuid(final String userUuid);
 
+    PrivateAccount findByLogin(final String login);
+
 }

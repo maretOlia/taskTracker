@@ -23,4 +23,5 @@ public interface PrivateTaskRepository extends GiraffeRepository<PrivateTask> {
 
     @Query("MATCH (subtasks:PrivateTask)-[:PARENT_TASK*]->(tasks:PrivateTask {uuid:{0}}) RETURN subtasks")
     Iterable<PrivateTask> findAllSubtasksForTask(final String uuid);
+
 }

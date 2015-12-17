@@ -2,6 +2,7 @@ package giraffe.domain.activity;
 
 import giraffe.domain.GiraffeEntity;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
  */
 abstract public class Activity extends GiraffeEntity {
 
+    @NotNull
     protected String name;
 
     protected String comment;

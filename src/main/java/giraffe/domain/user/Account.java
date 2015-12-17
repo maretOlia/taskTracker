@@ -1,8 +1,13 @@
 package giraffe.domain.user;
 
 import giraffe.domain.GiraffeEntity;
+import giraffe.domain.GiraffeAuthority;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.neo4j.ogm.annotation.Relationship;
 
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Guschcyna Olga
@@ -11,15 +16,40 @@ import java.util.Objects;
 
 public class Account extends GiraffeEntity {
 
+    @NotNull
     protected String login;
 
+    @NotNull
+    @JsonIgnore
     protected String password;
 
+    @JsonIgnore
     protected String salt;
 
-    public Account(final String login, final String password) {
+
+    @NotNull
+    @Relationship(type = "AUTHORITY", direction = Relationship.OUTGOING)
+    protected Set<GiraffeAuthority> authorities;
+
+
+    public Account(final String login, final String password, final Set<GiraffeAuthority> authorities) {
         this.login = login;
         this.password = password;
+        this.authorities = authorities;
+    }
+
+
+    public void grantAuthorities(final GiraffeAuthority authority) {
+        authorities.add(authority);
+    }
+
+
+    public Set<GiraffeAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(final Set<GiraffeAuthority> authorities) {
+        this.authorities = authorities;
     }
 
     public String getLogin() {
@@ -61,4 +91,5 @@ public class Account extends GiraffeEntity {
     public int hashCode() {
         return Objects.hash(super.hashCode(), login, password, salt);
     }
+
 }

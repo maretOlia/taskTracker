@@ -1,6 +1,8 @@
 package giraffe;
 
+import com.google.common.collect.Sets;
 import giraffe.domain.user.PrivateAccount;
+import giraffe.domain.GiraffeAuthority;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -23,7 +25,7 @@ public class ConfigurationTest extends GiraffeApplicationTestCase {
 
     @Test
     public void shouldPopulateUuidAndTimeFieldForEntity() {
-        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword"));
+        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
 
         assertThat(account.getUuid(), notNullValue());
         assertThat(account.getTimeCreated(), notNullValue());
@@ -31,7 +33,7 @@ public class ConfigurationTest extends GiraffeApplicationTestCase {
 
     @Test(expected = DataRetrievalFailureException.class)
     public void shouldCreateUniqueConstraintOnField() {
-        neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword"));
-        neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword"));
+        neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
+        neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
     }
 }

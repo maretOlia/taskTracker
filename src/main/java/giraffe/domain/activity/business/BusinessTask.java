@@ -154,4 +154,5 @@ public abstract class BusinessTask extends Activity {
     public int hashCode() {
         return Objects.hash(super.hashCode(), taskStatus, priority, estimate, assignedTo, openedBy, project, component);
     }
+
 }

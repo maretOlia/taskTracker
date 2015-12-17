@@ -2,6 +2,7 @@ package giraffe.service;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import giraffe.GiraffeApplicationTestCase;
 import giraffe.GiraffeException;
 import giraffe.domain.GiraffeEntity;
@@ -9,6 +10,7 @@ import giraffe.domain.activity.household.PrivateTask;
 import giraffe.domain.activity.utils.PrivateTaskBuilder;
 import giraffe.domain.user.PrivateAccount;
 import giraffe.repository.activity.PrivateTaskRepository;
+import giraffe.domain.GiraffeAuthority;
 import giraffe.service.activity.household.PrivateTaskManagementService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
 
     @Test
     public void shouldFindAllPrivateTaskWithSubtasksSharedWithUser() {
-        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword"));
+        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
 
         PrivateTask task1 = new PrivateTaskBuilder().name("test task 1").build();
         task1.shareWith(account);
@@ -72,7 +74,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
     public void shouldSharePrivateTaskWithPrivateAccount() {
         PrivateTask task = neo4jTemplate.save(new PrivateTaskBuilder().name("testName").build());
 
-        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword"));
+        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
         privateTaskManagementService.sharePrivateTask(Lists.newArrayList(account), task.getUuid());
 
         assertThat(Iterables.getFirst(privateTaskRepository.findTasksSharedWithAccount(account.getUuid()), null), is(equalTo(task)));
@@ -113,7 +115,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
     }
 
     public void shouldFindAllTasksOpenedByAccount() {
-        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword"));
+        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
 
         PrivateTask task1 = neo4jTemplate.save(new PrivateTaskBuilder().name("test task 1").openedBy(account).build());
         neo4jTemplate.save(task1);
@@ -126,7 +128,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
 
     @Test
     public void shouldFindAllTasksAssignedToAccount() {
-        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword"));
+        PrivateAccount account = neo4jTemplate.save(new PrivateAccount("testUser", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
 
         PrivateTask task1 = neo4jTemplate.save(new PrivateTaskBuilder().name("test task 1").assignedTo(account).build());
         neo4jTemplate.save(task1);

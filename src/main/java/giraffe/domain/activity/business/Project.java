@@ -8,6 +8,4 @@ import org.neo4j.ogm.annotation.NodeEntity;
  * @version 1.0.0
  */
 @NodeEntity
-public class Project extends Activity {
-
-}
+public class Project extends Activity { }
