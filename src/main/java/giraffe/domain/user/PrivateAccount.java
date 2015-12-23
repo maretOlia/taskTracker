@@ -12,6 +12,10 @@ import java.util.Set;
 @NodeEntity
 final public class PrivateAccount extends Account {
 
+    public PrivateAccount() {
+        super();
+    }
+
     public PrivateAccount(final String login, final String password, final Set<GiraffeAuthority> authorities) {
         super(login, password, authorities);
     }

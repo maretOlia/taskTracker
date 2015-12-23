@@ -1,15 +1,17 @@
 package giraffe.service.account;
 
 import com.google.common.collect.Sets;
+import giraffe.domain.GiraffeException;
+import giraffe.domain.GiraffeAuthority;
 import giraffe.domain.GiraffeEntity;
 import giraffe.domain.user.BusinessAccount;
 import giraffe.domain.user.PrivateAccount;
 import giraffe.repository.security.AuthorityRepository;
 import giraffe.repository.user.BusinessAccountRepository;
 import giraffe.repository.user.PrivateAccountRepository;
-import giraffe.domain.GiraffeAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.template.Neo4jOperations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +34,19 @@ public class AccountManagementService {
     @Autowired
     Neo4jOperations neo4jTemplate;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Transactional
-    public PrivateAccount createPrivateAccount(final String login, final String password) {
+    public PrivateAccount createPrivateAccount(final String login, final String password) throws GiraffeException.AccountWithCurrentLoginExistsException {
+       if (privateAccountRepository.findByLogin(login) != null) throw new GiraffeException.AccountWithCurrentLoginExistsException(login);
+
+        //GiraffeAuthority auth = neo4jTemplate.save(new GiraffeAuthority((GiraffeAuthority.Role.USER)));//TODO kill it
+
         final GiraffeAuthority authority = authorityRepository.findByRole(GiraffeAuthority.Role.USER);
-        final PrivateAccount privateAccount = new PrivateAccount(login, password, Sets.newHashSet(authority));
+
+        final String passwordHash = passwordEncoder.encode(password);
+        final PrivateAccount privateAccount = new PrivateAccount(login, passwordHash, Sets.newHashSet(authority));
 
         return neo4jTemplate.save(privateAccount);
     }

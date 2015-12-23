@@ -1,4 +1,4 @@
-package giraffe;
+package giraffe.config.neo4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.neo4j.template.Neo4jOperations;

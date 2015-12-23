@@ -1,7 +1,7 @@
 package giraffe.service.activity.household;
 
 import com.google.common.collect.Iterables;
-import giraffe.GiraffeException.CanNotDeleteTaskWithLinkedSubtasksException;
+import giraffe.domain.GiraffeException.CanNotDeleteTaskWithLinkedSubtasksException;
 import giraffe.domain.GiraffeEntity;
 import giraffe.domain.activity.household.PrivateTask;
 import giraffe.domain.user.PrivateAccount;

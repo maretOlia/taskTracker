@@ -21,10 +21,7 @@ public class Account extends GiraffeEntity {
 
     @NotNull
     @JsonIgnore
-    protected String password;
-
-    @JsonIgnore
-    protected String salt;
+    protected String passwordHash;
 
 
     @NotNull
@@ -32,9 +29,11 @@ public class Account extends GiraffeEntity {
     protected Set<GiraffeAuthority> authorities;
 
 
-    public Account(final String login, final String password, final Set<GiraffeAuthority> authorities) {
+    public Account() { }
+
+    public Account(final String login, final String passwordHash, final Set<GiraffeAuthority> authorities) {
         this.login = login;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.authorities = authorities;
     }
 
@@ -42,7 +41,6 @@ public class Account extends GiraffeEntity {
     public void grantAuthorities(final GiraffeAuthority authority) {
         authorities.add(authority);
     }
-
 
     public Set<GiraffeAuthority> getAuthorities() {
         return authorities;
@@ -60,20 +58,12 @@ public class Account extends GiraffeEntity {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(final String password) {
-        this.password = password;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(final String salt) {
-        this.salt = salt;
+    public void setPasswordHash(final String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     @Override
@@ -83,13 +73,13 @@ public class Account extends GiraffeEntity {
         if (!super.equals(o)) return false;
         Account account = (Account) o;
         return Objects.equals(login, account.login) &&
-                Objects.equals(password, account.password) &&
-                Objects.equals(salt, account.salt);
+                Objects.equals(passwordHash, account.passwordHash);
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), login, password, salt);
+        return Objects.hash(super.hashCode(), login, passwordHash);
     }
 
 }

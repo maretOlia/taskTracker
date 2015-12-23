@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en"></head>
+
+<body>
+<h1>Error Page</h1>
+
+<p th:text="${status}" th:unless="${status == null}">Status</p>
+<p th:text="${message}" th:unless="${message == null}">Message</p>
+
+<p th:text="${errorCode}" th:unless="${errorCode == null}"></p>
+
+<p>Application has encountered an error. Please contact support</p>
+
+
+
+</body>
+</html>

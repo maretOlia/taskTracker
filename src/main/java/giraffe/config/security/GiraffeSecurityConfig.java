@@ -1,7 +1,7 @@
-package giraffe;
+package giraffe.config.security;
 
-import giraffe.security.TokenizedUsernamePasswordAuthenticationFilter;
 import giraffe.security.TokenAuthenticationFilter;
+import giraffe.security.TokenizedUsernamePasswordAuthenticationFilter;
 import giraffe.service.security.PrivateUserDetailsService;
 import giraffe.service.security.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -33,6 +35,9 @@ public class GiraffeSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     PrivateUserDetailsService privateUserDetailsService;
 
+   /* @Autowired
+    PasswordEncoder passwordEncoder;*/
+
     private static final String AUTH_HEADER_NAME = "X-AUTH-TOKEN";
 
 
@@ -42,20 +47,20 @@ public class GiraffeSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()  .anonymous()
+                .and().anonymous()
 
-        .and()  .authorizeRequests()
+                .and().authorizeRequests()
 
                 // allow anonymous access
                 .antMatchers("/").permitAll()
+                .antMatchers("/error").permitAll()
                 .antMatchers(HttpMethod.POST, "/private/account").permitAll()
-                .antMatchers(HttpMethod.GET, "/private/account").permitAll()
                 .antMatchers(HttpMethod.POST, "/private/login").permitAll()
 
                 //defined Admin only API area
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().hasRole("USER")
-        .and()
+                .and()
                 // login-pass based authentication with post-processing custom filter which adds auth token
                 .addFilterBefore(new TokenizedUsernamePasswordAuthenticationFilter("/private/login", AUTH_HEADER_NAME, tokenAuthenticationService, privateUserDetailsService, authenticationManager()), UsernamePasswordAuthenticationFilter.class)
 
@@ -71,11 +76,17 @@ public class GiraffeSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(privateUserDetailsService);
+        auth.userDetailsService(privateUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Override
     protected UserDetailsService userDetailsService() {
         return privateUserDetailsService;
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }

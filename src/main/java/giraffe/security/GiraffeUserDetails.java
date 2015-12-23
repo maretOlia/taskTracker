@@ -25,6 +25,9 @@ public class GiraffeUserDetails implements UserDetails {
     private Set<GiraffeAuthority> authorities;
 
     @NotNull
+    private String uuid;
+
+    @NotNull
     private long expires;
 
     @NotNull
@@ -49,6 +52,7 @@ public class GiraffeUserDetails implements UserDetails {
     public GiraffeUserDetails(final String username,
                               final String password,
                               final Set<GiraffeAuthority> authorities,
+                              final String uuid,
                               final boolean accountExpired,
                               final boolean accountLocked,
                               final boolean credentialsExpired,
@@ -56,6 +60,7 @@ public class GiraffeUserDetails implements UserDetails {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+        this.uuid = uuid;
         this.accountExpired = accountExpired;
         this.accountLocked = accountLocked;
         this.credentialsExpired = credentialsExpired;
@@ -102,6 +107,14 @@ public class GiraffeUserDetails implements UserDetails {
 
     public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(final String uuid) {
+        this.uuid = uuid;
     }
 
     public long getExpires() {

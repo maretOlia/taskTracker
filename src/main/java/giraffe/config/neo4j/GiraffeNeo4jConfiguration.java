@@ -1,4 +1,4 @@
-package giraffe;
+package giraffe.config.neo4j;
 
 import giraffe.domain.GiraffeEntity;
 import org.neo4j.ogm.session.SessionFactory;

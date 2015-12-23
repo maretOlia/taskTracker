@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import giraffe.GiraffeApplicationTestCase;
-import giraffe.GiraffeException;
+import giraffe.domain.GiraffeException;
 import giraffe.domain.GiraffeEntity;
 import giraffe.domain.activity.household.PrivateTask;
 import giraffe.domain.activity.utils.PrivateTaskBuilder;

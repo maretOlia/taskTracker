@@ -26,7 +26,7 @@ public class PrivateUserDetailsService implements UserDetailsService {
         if (account == null)
             throw new UsernameNotFoundException("Private account with login: " + username + " not found");
 
-        return new GiraffeUserDetails(account.getLogin(), account.getPassword(), account.getAuthorities(), false, false, false, true);
+        return new GiraffeUserDetails(account.getLogin(), account.getPasswordHash(), account.getAuthorities(), account.getUuid(), false, false, false, true);
     }
 
 }

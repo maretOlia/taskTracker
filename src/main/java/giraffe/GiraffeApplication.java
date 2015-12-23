@@ -1,5 +1,7 @@
 package giraffe;
 
+import giraffe.config.neo4j.GiraffeNeo4jConfiguration;
+import giraffe.config.security.GiraffeSecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
