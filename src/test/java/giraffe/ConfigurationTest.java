@@ -1,11 +1,12 @@
 package giraffe;
 
 import com.google.common.collect.Sets;
-import giraffe.domain.user.PrivateAccount;
 import giraffe.domain.GiraffeAuthority;
+import giraffe.domain.user.PrivateAccount;
 import org.junit.Test;
+import org.neo4j.ogm.exception.CypherException;
+import org.neo4j.ogm.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.data.neo4j.template.Neo4jOperations;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,6 +23,9 @@ public class ConfigurationTest extends GiraffeApplicationTestCase {
     @Autowired
     Neo4jOperations neo4jTemplate;
 
+    @Autowired
+    private Session session;
+
 
     @Test
     public void shouldPopulateUuidAndTimeFieldForEntity() {
@@ -31,9 +35,15 @@ public class ConfigurationTest extends GiraffeApplicationTestCase {
         assertThat(account.getTimeCreated(), notNullValue());
     }
 
-    @Test(expected = DataRetrievalFailureException.class)
+    //@Test(expected = CypherException.class)
     public void shouldCreateUniqueConstraintOnField() {
-        neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
-        neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
+       try {
+           neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
+           neo4jTemplate.save(new PrivateAccount("testLogin", "testPassword", Sets.newHashSet(new GiraffeAuthority(GiraffeAuthority.Role.USER))));
+       }catch (CypherException e){
+           System.out.println("********************************");
+           System.out.println(e.getDescription());
+       }
+
     }
 }

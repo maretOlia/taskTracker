@@ -11,13 +11,12 @@ import javax.validation.constraints.NotNull;
  * @version 1.0.0
  */
 @NodeEntity
+//TODO: review inheritance
 public class GiraffeAuthority extends GiraffeEntity implements GrantedAuthority {
 
     @NotNull
     private Role role;
 
-
-    public GiraffeAuthority() { }
 
     public GiraffeAuthority(final Role role) {
         this.role = role;
@@ -25,7 +24,7 @@ public class GiraffeAuthority extends GiraffeEntity implements GrantedAuthority 
 
 
     public enum Role {
-        USER("ROLE_USER"), ADMIN("ROLE_ADMIN"), ANONIMOUS("ROLE_ANONYMOUS");
+        ADMIN("ROLE_ADMIN"), USER("ROLE_USER"), ANONIMOUS("ROLE_ANONYMOUS");
 
         private String value;
 

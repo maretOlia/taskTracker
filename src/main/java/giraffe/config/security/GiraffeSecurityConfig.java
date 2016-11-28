@@ -59,13 +59,20 @@ public class GiraffeSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //defined Admin only API area
                 .antMatchers("/admin/**").hasRole("ADMIN")
+
+                //defined USER only API area
                 .anyRequest().hasRole("USER")
                 .and()
+
+                // auth filter chain
                 // login-pass based authentication with post-processing custom filter which adds auth token
                 .addFilterBefore(new TokenizedUsernamePasswordAuthenticationFilter("/private/login", AUTH_HEADER_NAME, tokenAuthenticationService, privateUserDetailsService, authenticationManager()), UsernamePasswordAuthenticationFilter.class)
 
                 // custom stateless token based authentication
                 .addFilterBefore(new TokenAuthenticationFilter(AUTH_HEADER_NAME, tokenAuthenticationService), UsernamePasswordAuthenticationFilter.class);
+
+                //TODO: add single Sign On auth
+
     }
 
     @Bean

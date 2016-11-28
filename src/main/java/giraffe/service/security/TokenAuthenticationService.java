@@ -2,7 +2,7 @@ package giraffe.service.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import giraffe.security.GiraffeUserDetails;
+import giraffe.security.GiraffePrivateUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,9 @@ import java.util.Arrays;
 import java.util.Base64;
 
 /**
+ * Responsible for user auth token manipulation. Uses HMAC algorithm for token creation.
+ * Whole auth process is stateless and uses information provided in token to verify user identity.
+ *
  * @author Guschcyna Olga
  * @version 1.0.0
  */
@@ -32,9 +35,11 @@ public class TokenAuthenticationService {
 
     private static final Base64.Decoder decoder = Base64.getDecoder();
 
-
+    /**
+     * Initialize HMAC using secret word
+     */
     @Autowired
-    public TokenAuthenticationService(@Value("${token.secret}") final String secret) {
+    public TokenAuthenticationService(@Value("{$token.secret}") final String secret) {
         byte[] secretKey = DatatypeConverter.parseBase64Binary(secret);
         try {
             hmac = Mac.getInstance(HMAC_ALGORITHM);
@@ -44,16 +49,20 @@ public class TokenAuthenticationService {
         }
     }
 
-    public GiraffeUserDetails parseUserFromToken(final String token) {
+    public GiraffePrivateUserDetails parseUserFromToken(final String token) {
         final String[] parts = token.split("\\.");
         if (parts.length == 2 && parts[0].length() > 0 && parts[1].length() > 0) {
             try {
+
+                // UserDetails encoded with Base64
                 final byte[] userDetailsBytes = decoder.decode(parts[0]);
+
+                // UserDetails encoded with HMAC
                 final byte[] hashBytes = decoder.decode(parts[1]);
 
                 // check if hash is valid
                 if (Arrays.equals(createHmac(userDetailsBytes), hashBytes)) {
-                    GiraffeUserDetails userDetails = new ObjectMapper().readValue(new ByteArrayInputStream(userDetailsBytes), GiraffeUserDetails.class);
+                    GiraffePrivateUserDetails userDetails = new ObjectMapper().readValue(new ByteArrayInputStream(userDetailsBytes), GiraffePrivateUserDetails.class);
 
                     if (userDetails.getExpires() > System.currentTimeMillis()) {
                         return userDetails;
@@ -70,7 +79,7 @@ public class TokenAuthenticationService {
         return hmac.doFinal(content);
     }
 
-    public String createTokenForUser(final GiraffeUserDetails userDetails) {
+    public String createTokenForUser(final GiraffePrivateUserDetails userDetails) {
         final Base64.Encoder encoder = Base64.getEncoder();
         byte[] userBytes = new byte[0];
         try {

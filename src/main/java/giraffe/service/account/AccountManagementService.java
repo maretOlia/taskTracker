@@ -41,8 +41,6 @@ public class AccountManagementService {
     public PrivateAccount createPrivateAccount(final String login, final String password) throws GiraffeException.AccountWithCurrentLoginExistsException {
        if (privateAccountRepository.findByLogin(login) != null) throw new GiraffeException.AccountWithCurrentLoginExistsException(login);
 
-        //GiraffeAuthority auth = neo4jTemplate.save(new GiraffeAuthority((GiraffeAuthority.Role.USER)));//TODO kill it
-
         final GiraffeAuthority authority = authorityRepository.findByRole(GiraffeAuthority.Role.USER);
 
         final String passwordHash = passwordEncoder.encode(password);

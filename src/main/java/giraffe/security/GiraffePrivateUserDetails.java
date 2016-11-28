@@ -13,7 +13,7 @@ import java.util.Set;
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-public class GiraffeUserDetails implements UserDetails {
+public class GiraffePrivateUserDetails implements UserDetails {
 
     @NotNull
     private String username;
@@ -47,16 +47,16 @@ public class GiraffeUserDetails implements UserDetails {
     private boolean enabled;
 
 
-    public GiraffeUserDetails() { }
+    public GiraffePrivateUserDetails() { }
 
-    public GiraffeUserDetails(final String username,
-                              final String password,
-                              final Set<GiraffeAuthority> authorities,
-                              final String uuid,
-                              final boolean accountExpired,
-                              final boolean accountLocked,
-                              final boolean credentialsExpired,
-                              final boolean enabled) {
+    public GiraffePrivateUserDetails(final String username,
+                                     final String password,
+                                     final Set<GiraffeAuthority> authorities,
+                                     final String uuid,
+                                     final boolean accountExpired,
+                                     final boolean accountLocked,
+                                     final boolean credentialsExpired,
+                                     final boolean enabled) {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -157,7 +157,7 @@ public class GiraffeUserDetails implements UserDetails {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GiraffeUserDetails that = (GiraffeUserDetails) o;
+        GiraffePrivateUserDetails that = (GiraffePrivateUserDetails) o;
         return expires == that.expires &&
                 accountExpired == that.accountExpired &&
                 accountLocked == that.accountLocked &&

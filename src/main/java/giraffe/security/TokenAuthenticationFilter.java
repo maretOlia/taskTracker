@@ -34,7 +34,7 @@ public class TokenAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         final String token = ((HttpServletRequest) request).getHeader(headerName);
         if (token != null) {
-            final GiraffeUserDetails userDetails = tokenAuthenticationService.parseUserFromToken(token);
+            final GiraffePrivateUserDetails userDetails = tokenAuthenticationService.parseUserFromToken(token);
             if (userDetails != null) {
                 SecurityContextHolder.getContext().setAuthentication(new GiraffeAuthentication(userDetails));
             }

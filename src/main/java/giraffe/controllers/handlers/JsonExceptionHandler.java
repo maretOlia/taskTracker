@@ -7,16 +7,18 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
+ * Handle errors from Ajax requests
+ *
  * @author Guschcyna Olga
  * @version 1.0.0
- *
- * Handle errors from Ajax requests  in future
  */
+@EnableWebMvc
 @ControllerAdvice/*(basePackages = {""})*/
-@Order(3)
-public class AjaxExceptionHandler {
+@Order(1)
+public class JsonExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({Exception.class})

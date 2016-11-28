@@ -2,7 +2,7 @@ package giraffe.controllers.household;
 
 import giraffe.domain.GiraffeException;
 import giraffe.domain.user.PrivateAccount;
-import giraffe.security.GiraffeUserDetails;
+import giraffe.security.GiraffePrivateUserDetails;
 import giraffe.service.account.AccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
@@ -43,7 +43,7 @@ public class PrivateAccountController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     HttpEntity<Resource<PrivateAccount>> showAccount() {
-       final GiraffeUserDetails userDetails = (GiraffeUserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+       final GiraffePrivateUserDetails userDetails = (GiraffePrivateUserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
         final PrivateAccount privateAccount = userManagementService.findPrivateAccount(userDetails.getUuid());
 
         Resource<PrivateAccount> resource = new Resource<>(privateAccount);
@@ -54,7 +54,7 @@ public class PrivateAccountController {
 
     @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     HttpEntity<Resource<PrivateAccount>> deleteAccount() {
-        final GiraffeUserDetails userDetails = (GiraffeUserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        final GiraffePrivateUserDetails userDetails = (GiraffePrivateUserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
         final PrivateAccount privateAccount = userManagementService.deletePrivateAccount(userDetails.getUuid());
 
         Resource<PrivateAccount> resource = new Resource<>(privateAccount);

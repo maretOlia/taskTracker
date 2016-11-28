@@ -30,18 +30,18 @@ final public class PrivateTaskBuilder extends ActivityBuilder<PrivateTaskBuilder
         return new PrivateTask(name, comment, references, img, taskStatus, type, term, assignedTo, openedBy, parentTask);
     }
 
-    public PrivateTaskBuilder assignedTo(final PrivateAccount account){
+    public PrivateTaskBuilder assignedTo(final PrivateAccount account) {
         this.assignedTo = account;
         return self();
     }
 
-    public PrivateTaskBuilder openedBy(final PrivateAccount account){
+    public PrivateTaskBuilder openedBy(final PrivateAccount account) {
         this.openedBy = account;
         return self();
     }
 
     public PrivateTaskBuilder parentTask(final PrivateTask parentTask) {
-       this.parentTask = parentTask;
+        this.parentTask = parentTask;
         return this;
     }
 

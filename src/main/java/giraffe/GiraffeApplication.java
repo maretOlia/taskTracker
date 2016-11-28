@@ -1,5 +1,6 @@
 package giraffe;
 
+import giraffe.config.neo4j.DataCreator;
 import giraffe.config.neo4j.GiraffeNeo4jConfiguration;
 import giraffe.config.security.GiraffeSecurityConfig;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,7 @@ public class GiraffeApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(GiraffeApplication.class, args);
+
     }
 
 }

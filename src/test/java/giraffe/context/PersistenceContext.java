@@ -1,14 +1,11 @@
 package giraffe.context;
 
+import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.data.neo4j.server.InProcessServer;
-import org.springframework.data.neo4j.server.Neo4jServer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -24,13 +21,23 @@ public class PersistenceContext extends Neo4jConfiguration {
 
     @Override
     public SessionFactory getSessionFactory() {
-        return new SessionFactory("giraffe.domain");
+        return new SessionFactory(getConfiguration(), "giraffe.domain");
     }
 
     @Bean
-    public Neo4jServer neo4jServer() {
-        return new InProcessServer();
-       // return new RemoteServer("http://localhost:7474", "neo4j", "giraffe");
+    public org.neo4j.ogm.config.Configuration getConfiguration() {
+        org.neo4j.ogm.config.Configuration config = new org.neo4j.ogm.config.Configuration();
+        config
+                .driverConfiguration()
+                .setDriverClassName("org.neo4j.ogm.drivers.http.driver.HttpDriver")
+                .setURI("http://neo4j:giraffe@localhost:7474");
+        return config;
+    }
+
+    @Override
+    @Bean
+    public Session getSession() throws Exception {
+        return super.getSession();
     }
 
 }

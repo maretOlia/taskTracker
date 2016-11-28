@@ -47,7 +47,7 @@ public class PrivateTaskManagementService {
         return privateTaskRepository.findTasksSharedWithAccount(userUuid);
     }
 
-    @Transactional
+    //@Transactional
     public PrivateTask deletePrivateTask(final String uuid, boolean withSubtasks) throws CanNotDeleteTaskWithLinkedSubtasksException {
         PrivateTask task = privateTaskRepository.findByUuid(uuid);
 
@@ -64,14 +64,14 @@ public class PrivateTaskManagementService {
         return neo4jTemplate.save(task);
     }
 
-    @Transactional
+    //@Transactional
     public PrivateTask addSubtask(final PrivateTask subtask, final String parentTaskUuid) {
         subtask.parentTask(privateTaskRepository.findByUuid(parentTaskUuid));
 
         return neo4jTemplate.save(subtask);
     }
 
-    @Transactional
+    //@Transactional
     public PrivateTask sharePrivateTask(final List<PrivateAccount> accountsToShareWith, final String taskUuid) {
         final PrivateTask task = privateTaskRepository.findByUuid(taskUuid);
 

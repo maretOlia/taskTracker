@@ -66,7 +66,7 @@ public class TokenizedUsernamePasswordAuthenticationFilter extends AbstractAuthe
                                             final HttpServletResponse response,
                                             final FilterChain chain,
                                             final Authentication authentication) throws IOException, ServletException {
-        final GiraffeUserDetails authenticatedUser = privateUserDetailsService.loadUserByUsername(authentication.getName());
+        final GiraffePrivateUserDetails authenticatedUser = privateUserDetailsService.loadUserByUsername(authentication.getName());
         final GiraffeAuthentication userAuthentication = new GiraffeAuthentication(authenticatedUser);
 
         authenticatedUser.setExpires(System.currentTimeMillis() + FIVE_DAYS);
