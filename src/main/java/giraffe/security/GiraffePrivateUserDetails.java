@@ -2,7 +2,7 @@ package giraffe.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import giraffe.domain.GiraffeAuthority;
+import giraffe.domain.account.GiraffeAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotNull;

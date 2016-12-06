@@ -1,17 +1,14 @@
 package giraffe.service.activity.household;
 
 import com.google.common.collect.Iterables;
-import giraffe.domain.GiraffeException.CanNotDeleteTaskWithLinkedSubtasksException;
 import giraffe.domain.GiraffeEntity;
+import giraffe.domain.GiraffeException.CanNotDeleteTaskWithLinkedSubtasksException;
 import giraffe.domain.activity.household.PrivateTask;
-import giraffe.domain.user.PrivateAccount;
 import giraffe.repository.activity.PrivateTaskRepository;
+import giraffe.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.template.Neo4jOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @author Guschcyna Olga
@@ -24,58 +21,55 @@ public class PrivateTaskManagementService {
     PrivateTaskRepository privateTaskRepository;
 
     @Autowired
-    Neo4jOperations neo4jTemplate;
+    UserRepository userRepository;
 
 
-    public PrivateTask findPrivateTaskByUuid(final String uuid) {
-        return privateTaskRepository.findByUuid(uuid);
+    public PrivateTask findPrivateTaskByUuid(String uuid) {
+        return privateTaskRepository.findOne(uuid);
     }
 
-    public PrivateTask createPrivateTask(final PrivateTask task) {
-        return neo4jTemplate.save(task);
+    public PrivateTask createPrivateTask(PrivateTask task) {
+        return privateTaskRepository.save(task);
     }
 
-    public Iterable<PrivateTask> findPrivateTasksAssignedToAccount(final String accountUuid) {
-        return privateTaskRepository.findByAssignedTo(accountUuid);
+    public Iterable<PrivateTask> findPrivateTasksAssignedToAccount(String userUuid) {
+        return privateTaskRepository.findByAssignedTo(userRepository.findOne(userUuid));
     }
 
-    public Iterable<PrivateTask> findPrivateTasksOpenedByAccount(final String accountUuid) {
-        return privateTaskRepository.findByOpenedBy(accountUuid);
+    public Iterable<PrivateTask> findPrivateTasksOpenedByAccount(String userUuid) {
+        return privateTaskRepository.findByOpenedBy(userRepository.findOne(userUuid));
     }
 
-    public Iterable<PrivateTask> findTasksSharedWithUser(final String userUuid) {
-        return privateTaskRepository.findTasksSharedWithAccount(userUuid);
-    }
+    @Transactional
+    public PrivateTask deletePrivateTask(String uuid, boolean withSubtasks) throws CanNotDeleteTaskWithLinkedSubtasksException {
+        PrivateTask task = privateTaskRepository.findOne(uuid);
 
-    //@Transactional
-    public PrivateTask deletePrivateTask(final String uuid, boolean withSubtasks) throws CanNotDeleteTaskWithLinkedSubtasksException {
-        PrivateTask task = privateTaskRepository.findByUuid(uuid);
-
-        Iterable<PrivateTask> subtasks = privateTaskRepository.findAllSubtasksForTask(uuid);
+        Iterable<PrivateTask> subtasks = privateTaskRepository.findByParent(privateTaskRepository.findOne(uuid));
         if (!Iterables.isEmpty(subtasks) && !withSubtasks) throw new CanNotDeleteTaskWithLinkedSubtasksException(uuid);
 
         subtasks.forEach(subtask -> {
                     subtask.setStatus(GiraffeEntity.Status.DELETED);
-                    neo4jTemplate.save(subtask);
+                    privateTaskRepository.save(subtask);
                 }
         );
         task.setStatus(GiraffeEntity.Status.DELETED);
 
-        return neo4jTemplate.save(task);
+        return privateTaskRepository.save(task);
     }
 
-    //@Transactional
-    public PrivateTask addSubtask(final PrivateTask subtask, final String parentTaskUuid) {
-        subtask.parentTask(privateTaskRepository.findByUuid(parentTaskUuid));
+    public PrivateTask addSubtask(PrivateTask subtask, String parentUuid) {
+        PrivateTask parent = privateTaskRepository.findOne(parentUuid);
+        subtask.setParent(parent);
+        parent.addChildTask(subtask);
 
-        return neo4jTemplate.save(subtask);
+        privateTaskRepository.save(parent);
+
+        return subtask;
     }
 
-    //@Transactional
-    public PrivateTask sharePrivateTask(final List<PrivateAccount> accountsToShareWith, final String taskUuid) {
-        final PrivateTask task = privateTaskRepository.findByUuid(taskUuid);
-
-        accountsToShareWith.forEach(task::shareWith);
+    public PrivateTask asignTask(String taskUuid, String userUuuid) {
+        PrivateTask task = privateTaskRepository.findOne(taskUuid);
+        task.setAssignedTo(userRepository.findOne(userUuuid));
 
         return privateTaskRepository.save(task);
     }

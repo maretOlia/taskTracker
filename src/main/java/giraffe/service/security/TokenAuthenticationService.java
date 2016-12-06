@@ -18,8 +18,8 @@ import java.util.Arrays;
 import java.util.Base64;
 
 /**
- * Responsible for user auth token manipulation. Uses HMAC algorithm for token creation.
- * Whole auth process is stateless and uses information provided in token to verify user identity.
+ * Responsible for account auth token manipulation. Uses HMAC algorithm for token creation.
+ * Whole auth process is stateless and uses information provided in token to verify account identity.
  *
  * @author Guschcyna Olga
  * @version 1.0.0
@@ -39,7 +39,7 @@ public class TokenAuthenticationService {
      * Initialize HMAC using secret word
      */
     @Autowired
-    public TokenAuthenticationService(@Value("{$token.secret}") final String secret) {
+    public TokenAuthenticationService(@Value("{$token.secret}") String secret) {
         byte[] secretKey = DatatypeConverter.parseBase64Binary(secret);
         try {
             hmac = Mac.getInstance(HMAC_ALGORITHM);
@@ -49,7 +49,7 @@ public class TokenAuthenticationService {
         }
     }
 
-    public GiraffePrivateUserDetails parseUserFromToken(final String token) {
+    public GiraffePrivateUserDetails parseUserFromToken(String token) {
         final String[] parts = token.split("\\.");
         if (parts.length == 2 && parts[0].length() > 0 && parts[1].length() > 0) {
             try {

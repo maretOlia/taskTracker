@@ -1,9 +1,9 @@
-package giraffe.controllers.household;
+package giraffe.controllers.account;
 
 import giraffe.domain.GiraffeException;
-import giraffe.domain.user.PrivateAccount;
+import giraffe.domain.account.User;
 import giraffe.security.GiraffePrivateUserDetails;
-import giraffe.service.account.AccountManagementService;
+import giraffe.service.account.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
@@ -24,40 +24,40 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  * @version 1.0.0
  */
 @Controller
-@RequestMapping("/private/account")
-public class PrivateAccountController {
+@RequestMapping("/account")
+public class AccountController {
 
     @Autowired
-    AccountManagementService userManagementService;
+    UserManagementService userManagementService;
 
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    HttpEntity<Resource<PrivateAccount>> createAccount(@RequestParam final String login, @RequestParam final String password) throws GiraffeException.AccountWithCurrentLoginExistsException {
-        final PrivateAccount account = userManagementService.createPrivateAccount(login, password);
-        Resource<PrivateAccount> resource = new Resource<>(account);
-        resource.add(linkTo(methodOn(PrivateAccountController.class).showAccount()).withSelfRel());
-        resource.add(linkTo(methodOn(PrivateAccountController.class).deleteAccount()).withRel("delete"));
+    HttpEntity<Resource<User>> createAccount(@RequestParam final String login, @RequestParam final String password) throws GiraffeException.AccountWithCurrentLoginExistsException {
+        final User account = userManagementService.createAccount(login, password);
+        Resource<User> resource = new Resource<>(account);
+        resource.add(linkTo(methodOn(AccountController.class).showAccount()).withSelfRel());
+        resource.add(linkTo(methodOn(AccountController.class).deleteAccount()).withRel("delete"));
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    HttpEntity<Resource<PrivateAccount>> showAccount() {
+    HttpEntity<Resource<User>> showAccount() {
        final GiraffePrivateUserDetails userDetails = (GiraffePrivateUserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        final PrivateAccount privateAccount = userManagementService.findPrivateAccount(userDetails.getUuid());
+        final User privateAccount = userManagementService.findPrivateAccount(userDetails.getUuid());
 
-        Resource<PrivateAccount> resource = new Resource<>(privateAccount);
-        resource.add(linkTo(methodOn(PrivateAccountController.class).showAccount()).withSelfRel());
+        Resource<User> resource = new Resource<>(privateAccount);
+        resource.add(linkTo(methodOn(AccountController.class).showAccount()).withSelfRel());
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    HttpEntity<Resource<PrivateAccount>> deleteAccount() {
+    HttpEntity<Resource<User>> deleteAccount() {
         final GiraffePrivateUserDetails userDetails = (GiraffePrivateUserDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        final PrivateAccount privateAccount = userManagementService.deletePrivateAccount(userDetails.getUuid());
+        final User privateAccount = userManagementService.deletePrivateAccount(userDetails.getUuid());
 
-        Resource<PrivateAccount> resource = new Resource<>(privateAccount);
+        Resource<User> resource = new Resource<>(privateAccount);
 
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }

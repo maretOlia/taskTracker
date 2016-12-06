@@ -1,7 +1,7 @@
 package giraffe.service.security;
 
-import giraffe.domain.user.PrivateAccount;
-import giraffe.repository.user.PrivateAccountRepository;
+import giraffe.domain.account.User;
+import giraffe.repository.user.UserRepository;
 import giraffe.security.GiraffePrivateUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 public class PrivateUserDetailsService implements UserDetailsService {
 
     @Autowired
-    PrivateAccountRepository privateAccountRepository;
+    UserRepository userRepository;
 
 
     @Override
-    public GiraffePrivateUserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-       final PrivateAccount account = privateAccountRepository.findByLogin(username);
+    public GiraffePrivateUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+       final User account = userRepository.findByLogin(username);
 
         if (account == null)
             throw new UsernameNotFoundException("Private account with login: " + username + " not found");

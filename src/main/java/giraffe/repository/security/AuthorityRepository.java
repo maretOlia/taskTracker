@@ -1,7 +1,7 @@
 package giraffe.repository.security;
 
-import giraffe.domain.GiraffeAuthority;
-import org.springframework.data.neo4j.repository.GraphRepository;
+import giraffe.domain.account.GiraffeAuthority;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
  * @version 1.0.0
  */
 @Repository
-public interface AuthorityRepository extends GraphRepository<GiraffeAuthority> {
+public interface AuthorityRepository extends CrudRepository<GiraffeAuthority, String> {
 
-    GiraffeAuthority findByRole(final GiraffeAuthority.Role role);
+    GiraffeAuthority findByRole(GiraffeAuthority.Role role);
 
 }

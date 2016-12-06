@@ -4,8 +4,8 @@ import giraffe.domain.GiraffeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -46,9 +46,9 @@ public class GiraffeErrorController implements ErrorController {
         return errorAttributes.getErrorAttributes(requestAttributes, includeStackTrace);
     }
 
-    @RequestMapping(value = PATH, produces = "application/json")
+    @RequestMapping(value = PATH, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public GiraffeException.ErrorResponse handleErrorJson(HttpServletRequest request, final Model model) {
+    public GiraffeException.ErrorResponse handleErrorJson(HttpServletRequest request) {
         Map<String, Object> errorAttributes = getErrorAttributes(request, false);
 
         GiraffeException.ErrorResponse errorResponse = new GiraffeException.ErrorResponse();

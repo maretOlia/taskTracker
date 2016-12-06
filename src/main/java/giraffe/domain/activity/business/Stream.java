@@ -1,48 +1,83 @@
 package giraffe.domain.activity.business;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import com.google.common.collect.Sets;
+import giraffe.domain.GiraffeEntity;
+import org.springframework.util.Assert;
+
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-public class Stream {
+@Entity
+public class Stream extends GiraffeEntity {
 
-    private List<BusinessTask> backlog = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "stream", cascade = CascadeType.ALL)
+    private Set<BusinessTask> backlog = Sets.newHashSet();
 
-    private Long term;
+    @Column(name = "start_time")
+    private Long startTime;
+
+    @Column(name = "end_time")
+    private Long endTime;
 
 
-    public Stream(final Long term) {
-        this.term = term;
+    Stream() { }
+
+    public Stream(Long startTime, Long endTime) {
+        Assert.notNull(startTime, "Start Time must not be null");
+        Assert.notNull(endTime, "End Time must not be null");
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
-    public Long getTerm() {
-        return term;
-    }
-
-    public void setTerm(final Long term) {
-        this.term = term;
-    }
-
-    public List<BusinessTask> getBacklog() {
+    public Set<BusinessTask> getBacklog() {
         return backlog;
     }
 
+    public void addTaskToBacklog(BusinessTask task) {
+        if (!backlog.contains(task)) {
+            backlog.add(task);
+        }
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    public Long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Long endTime) {
+        this.endTime = endTime;
+    }
+
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Stream)) return false;
+        if (!super.equals(o)) return false;
+
         Stream stream = (Stream) o;
-        return Objects.equals(backlog, stream.backlog) &&
-                Objects.equals(term, stream.term);
+
+        if (!startTime.equals(stream.startTime)) return false;
+        return endTime.equals(stream.endTime);
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(backlog, term);
+        int result = super.hashCode();
+        result = 31 * result + startTime.hashCode();
+        result = 31 * result + endTime.hashCode();
+        return result;
     }
 
 }

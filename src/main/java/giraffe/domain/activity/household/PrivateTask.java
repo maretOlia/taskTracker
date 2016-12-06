@@ -1,67 +1,45 @@
 package giraffe.domain.activity.household;
 
+import com.google.common.collect.Sets;
 import giraffe.domain.activity.Activity;
-import giraffe.domain.user.PrivateAccount;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
+import giraffe.domain.account.User;
+import org.springframework.util.Assert;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import javax.persistence.*;
 import java.util.Set;
 
 /**
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-@NodeEntity
-final public class PrivateTask extends Activity {
+@Entity
+@Table(name = "private_task")
+public class PrivateTask extends Activity {
 
-    private TaskStatus taskStatus;
+    @ManyToOne
+    @JoinColumn(name = "parent_uuid")
+    private PrivateTask parent;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.ALL)
+    private Set<PrivateTask> childTasks = Sets.newHashSet();
+
+    @Column(nullable = false)
+    @Enumerated
     private Type type;
 
-    private Long term;
+    private Integer term; // hours
 
-    @Relationship(type = "OPENED_BY", direction = Relationship.OUTGOING)
-    private PrivateAccount openedBy;
+    @Column(name = "task_status", nullable = false)
+    @Enumerated
+    private TaskStatus taskStatus = TaskStatus.OPEN;
 
-    @Relationship(type = "ASSIGNED_TO", direction = Relationship.OUTGOING)
-    private PrivateAccount assignedTo;
-
-    @Relationship(type = "SHARED_WITH", direction = Relationship.OUTGOING)
-    private Set<PrivateAccount> sharedWith = new HashSet<>();
-
-    private PrivateTask parentTask;
-
-
-    private PrivateTask() { }
-
-    public PrivateTask(final String name,
-                       final String comment,
-                       final List<String> references,
-                       final List<String> imgs,
-                       final TaskStatus taskStatus,
-                       final Type type,
-                       final Long term,
-                       final PrivateAccount assignedTo,
-                       final PrivateAccount openedBy,
-                       final PrivateTask parentTask) {
-        super(name, comment, references, imgs);
-        this.taskStatus = taskStatus;
-        this.type = type;
-        this.term = term;
-        this.openedBy = openedBy;
-        this.assignedTo = assignedTo;
-        this.parentTask = parentTask;
-    }
 
     public enum Type {
         TASK(0), EVENT(1), PURCHASE(2), GIFT(3), EDUCATION(4), JOURNEY(5);
 
         private int value;
 
-        Type(final int value) {
+        Type(int value) {
             this.value = value;
         }
 
@@ -71,11 +49,11 @@ final public class PrivateTask extends Activity {
     }
 
     public enum TaskStatus {
-        OPEN(0), DELAYED(1), DONE(2);
+        OPEN(0), DELAYED(2), DONE(3);
 
         private int value;
 
-        TaskStatus(final int value) {
+        TaskStatus(int value) {
             this.value = value;
         }
 
@@ -84,80 +62,81 @@ final public class PrivateTask extends Activity {
         }
     }
 
-
-    public PrivateTask getParentTask() {
-        return parentTask;
+    PrivateTask() {
     }
 
-    public void parentTask(final PrivateTask parentTask) {
-        this.parentTask = parentTask;
-    }
-
-    public void shareWith(final PrivateAccount account) {
-        sharedWith.add(account);
-    }
-
-    public void openedBy(PrivateAccount openedBy) {
-        this.openedBy = openedBy;
-    }
-
-    public PrivateAccount getOpenedBy() {
-        return openedBy;
-    }
-
-    public void assignedTo(PrivateAccount assignedTo) {
-        this.assignedTo = assignedTo;
-    }
-
-    public PrivateAccount getAssignedTo() {
-        return assignedTo;
-    }
-
-    public Set<PrivateAccount> getSharedWith() {
-        return sharedWith;
-    }
-
-    public TaskStatus getTaskStatus() {
-        return taskStatus;
-    }
-
-    public void setTaskStatus(final TaskStatus taskStatus) {
-        this.taskStatus = taskStatus;
+    public PrivateTask(String name, User openedBy, PrivateTask parent, Type type, Integer term) {
+        super(name, openedBy);
+        Assert.notNull(type, "Type must not be null");
+        this.type = type;
+        this.term = term;
+        this.parent = parent;
     }
 
     public Type getType() {
         return type;
     }
 
-    public void setType(final Type type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
-    public Long getTerm() {
+    public Integer getTerm() {
         return term;
     }
 
-    public void setTerm(final Long term) {
+    public void setTerm(Integer term) {
         this.term = term;
+    }
+
+    public TaskStatus getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(TaskStatus taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    public Set<PrivateTask> getChildTasks() {
+        return childTasks;
+    }
+
+    public void addChildTask(PrivateTask childTask) {
+        if (!childTasks.contains(childTask)) {
+            childTasks.add(childTask);
+        }
+    }
+
+    public PrivateTask getParent() {
+        return parent;
+    }
+
+    public void setParent(PrivateTask parent) {
+        this.parent = parent;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof PrivateTask)) return false;
         if (!super.equals(o)) return false;
+
         PrivateTask that = (PrivateTask) o;
-        return taskStatus == that.taskStatus &&
-                type == that.type &&
-                Objects.equals(term, that.term) &&
-                Objects.equals(openedBy, that.openedBy) &&
-                Objects.equals(assignedTo, that.assignedTo) &&
-                Objects.equals(sharedWith, that.sharedWith);
+
+        if (parent != null ? !parent.getUuid().equals(that.parent.getUuid()) : that.parent != null) return false;
+        if (type != that.type) return false;
+        if (term != null ? !term.equals(that.term) : that.term != null) return false;
+        return taskStatus == that.taskStatus;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), taskStatus, type, term, openedBy, assignedTo, sharedWith);
+        int result = super.hashCode();
+        result = 31 * result + (parent != null ? parent.getUuid().hashCode() : 0);
+        result = 31 * result + type.hashCode();
+        result = 31 * result + (term != null ? term.hashCode() : 0);
+        result = 31 * result + taskStatus.hashCode();
+        return result;
     }
-
 }

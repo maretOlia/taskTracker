@@ -1,45 +1,55 @@
 package giraffe.domain.activity;
 
+import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
+import giraffe.domain.account.User;
+import org.springframework.util.Assert;
 
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Objects;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-abstract public class Activity extends GiraffeEntity {
+@MappedSuperclass
+public class Activity extends GiraffeEntity {
 
-    @NotNull
+    @Column(nullable = false)
     protected String name;
 
     protected String comment;
 
-    protected List<String> references;
+    @OneToOne
+    @JoinColumn(name = "opened_by_user_uuid", nullable = false)
+    protected User openedBy;
 
-    protected List<String> imgs;
+    @OneToOne
+    @JoinColumn(name = "assigned_to_user_uuid")
+    protected User assignedTo;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "activity_id")
+    protected Set<Image> imgs = Sets.newHashSet();
 
-    public Activity(final String name,
-                    final String comment,
-                    final List<String> references,
-                    final List<String> imgs) {
-        this.name = name;
-        this.comment = comment;
-        this.references = references;
-        this.imgs = imgs;
-    }
 
     protected Activity() {
     }
+
+    protected Activity(String name, User openedBy) {
+        super();
+        Assert.notNull(name, "Name must not be null");
+        Assert.notNull(openedBy, "Opened By must not be null");
+        this.name = name;
+        this.openedBy = openedBy;
+    }
+
 
     public String getName() {
         return name;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -47,32 +57,56 @@ abstract public class Activity extends GiraffeEntity {
         return comment;
     }
 
-    public void setComment(final String comment) {
+    public void setComment(String comment) {
         this.comment = comment;
     }
 
-    public List<String> getReferences() {
-        return references;
-    }
-
-    public List<String> getImgs() {
+    public Set<Image> getImgs() {
         return imgs;
     }
 
+    public void addImg(Image img) {
+        if (imgs.contains(img)) {
+            imgs.add(img);
+        }
+    }
+
+    public User getOpenedBy() {
+        return openedBy;
+    }
+
+    public User getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(User assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Activity)) return false;
+        if (!super.equals(o)) return false;
+
         Activity activity = (Activity) o;
 
-        return Objects.equals(name, activity.name) &&
-                Objects.equals(comment, activity.comment) &&
-                Objects.equals(references, activity.references) &&
-                Objects.equals(imgs, activity.imgs);
+        if (!name.equals(activity.name)) return false;
+        if (comment != null ? !comment.equals(activity.comment) : activity.comment != null) return false;
+        if (!openedBy.getUuid().equals(activity.openedBy.getUuid())) return false;
+        return assignedTo != null ? assignedTo.getUuid().equals(activity.assignedTo.getUuid()) : activity.assignedTo == null;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, comment, references, imgs);
+        int result = super.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + openedBy.getUuid().hashCode();
+        result = 31 * result + (assignedTo != null ? assignedTo.getUuid().hashCode() : 0);
+        return result;
     }
 }
+

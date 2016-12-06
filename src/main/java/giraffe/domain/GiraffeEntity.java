@@ -1,23 +1,27 @@
 package giraffe.domain;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.springframework.hateoas.ResourceSupport;
-
+import javax.persistence.*;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-public class GiraffeEntity extends ResourceSupport {
+@MappedSuperclass
+public class GiraffeEntity {
 
-    @JsonIgnore
-    private Long id; // neo4j internal id
+    @Id
+    @Column(nullable = false)
+    protected String uuid = UUID.randomUUID().toString();
 
-    protected String uuid;
+    @Column(nullable = false)
+    protected Long timeCreated = System.currentTimeMillis();
 
-    protected Long timeCreated;
+    protected Long timeDeleted;
 
+    @Column(nullable = false)
+    @Enumerated
     protected Status status = Status.ACTIVE;
 
 
@@ -26,7 +30,7 @@ public class GiraffeEntity extends ResourceSupport {
 
         private int value;
 
-        Status(final int value) {
+        Status(int value) {
             this.value = value;
         }
 
@@ -40,39 +44,40 @@ public class GiraffeEntity extends ResourceSupport {
         return uuid;
     }
 
-    public void setUuid(final String uuid) {
-        this.uuid = uuid;
-    }
-
     public Long getTimeCreated() {
         return timeCreated;
     }
 
-    public void setTimeCreated(final Long timeCreated) {
-        this.timeCreated = timeCreated;
+    public Long getTimeDeleted() {
+        return timeDeleted;
+    }
+
+    public void setTimeDeleted(Long timeDeleted) {
+        this.timeDeleted = timeDeleted;
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setStatus(final Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiraffeEntity that = (GiraffeEntity) o;
         return Objects.equals(uuid, that.uuid) &&
                 Objects.equals(status, that.status) &&
-                Objects.equals(timeCreated, that.timeCreated);
+                Objects.equals(timeCreated, that.timeCreated) &&
+                Objects.equals(timeDeleted, that.timeDeleted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, status, timeCreated);
+        return Objects.hash(uuid, status, timeCreated, timeDeleted);
     }
 
 }

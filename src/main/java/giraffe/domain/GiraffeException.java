@@ -6,7 +6,7 @@ package giraffe.domain;
  */
 abstract public class GiraffeException extends Exception {
 
-    public GiraffeException(final String message) {
+    public GiraffeException(String message) {
         super(message);
     }
 
@@ -15,7 +15,7 @@ abstract public class GiraffeException extends Exception {
 
     public static class CanNotDeleteTaskWithLinkedSubtasksException extends GiraffeException {
 
-        public CanNotDeleteTaskWithLinkedSubtasksException(final String uuid) {
+        public CanNotDeleteTaskWithLinkedSubtasksException(String uuid) {
             super("Can not delete task with uuid: " + uuid + ". Current task have linked subtasks");
         }
 
@@ -27,8 +27,8 @@ abstract public class GiraffeException extends Exception {
 
     public static class AccountWithCurrentLoginExistsException extends GiraffeException {
 
-        public AccountWithCurrentLoginExistsException(final String login) {
-            super("Account with login: : " + login + ". already exists");
+        public AccountWithCurrentLoginExistsException(String login) {
+            super("User with login: : " + login + ". already exists");
         }
 
         @Override
@@ -49,7 +49,7 @@ abstract public class GiraffeException extends Exception {
             return errorCode;
         }
 
-        public void setErrorCode(final int errorCode) {
+        public void setErrorCode(int errorCode) {
             this.errorCode = errorCode;
         }
 
@@ -57,7 +57,7 @@ abstract public class GiraffeException extends Exception {
             return message;
         }
 
-        public void setMessage(final String message) {
+        public void setMessage(String message) {
             this.message = message;
         }
     }

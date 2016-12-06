@@ -1,62 +1,53 @@
 package giraffe.domain.activity.business;
 
+import com.google.common.collect.Sets;
 import giraffe.domain.activity.Activity;
-import giraffe.domain.user.BusinessAccount;
+import giraffe.domain.account.User;
+import org.springframework.util.Assert;
 
-import java.util.List;
-import java.util.Objects;
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-public abstract class BusinessTask extends Activity {
+@Entity
+@Table(name = "business_task")
+public class BusinessTask extends Activity {
 
-    protected TaskStatus taskStatus;
+    @ManyToOne
+    @JoinColumn(name = "parent_uuid")
+    protected BusinessTask parent;
 
-    protected Priority priority;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.ALL)
+    protected Set<BusinessTask> childTasks = Sets.newHashSet();
 
-    protected Integer estimate;
+    @Enumerated
+    @Column(name = "task_status", nullable = false)
+    private TaskStatus taskStatus = TaskStatus.OPEN;
 
-    protected BusinessAccount assignedTo;
+    @Enumerated
+    @Column(nullable = false)
+    private Priority priority;
 
-    protected BusinessAccount openedBy;
+    private Integer estimate; //hours
 
-    protected Component component;
+    @ManyToOne
+    @JoinColumn(name = "component_uuid")
+    private Component component;
 
-    protected Project project;
+    @ManyToOne
+    @JoinColumn(name = "stream_uuid")
+    private Stream stream;
 
-
-    private BusinessTask() { }
-
-    public BusinessTask(final String name,
-                        final String comment,
-                        final List<String> references,
-                        final List<String> imgs,
-                        final TaskStatus taskStatus,
-                        final Priority priority,
-                        final Integer estimate,
-                        final BusinessAccount assignedTo,
-                        final BusinessAccount openedBy,
-                        final Project project,
-                        final Component component) {
-        super(name, comment, references, imgs);
-        this.openedBy = openedBy;
-        this.taskStatus = taskStatus;
-        this.priority = priority;
-        this.estimate = estimate;
-        this.openedBy = openedBy;
-        this.assignedTo = assignedTo;
-        this.project = project;
-        this.component = component;
-    }
 
     public enum TaskStatus {
         OPEN(0), IN_PROGRESS(1), DELAYED(2), DONE(3), NEEDS_REVIEW(4), CLOSED(5);
 
         private int value;
 
-        TaskStatus(final int value) {
+        TaskStatus(int value) {
             this.value = value;
         }
 
@@ -70,7 +61,7 @@ public abstract class BusinessTask extends Activity {
 
         private int value;
 
-        Priority(final int value) {
+        Priority(int value) {
             this.value = value;
         }
 
@@ -79,35 +70,26 @@ public abstract class BusinessTask extends Activity {
         }
     }
 
-    public Component getComponent() {
-        return component;
-    }
+    BusinessTask(){ }
 
-    public void component(Component component) {
+    public BusinessTask(String name, User openedBy, BusinessTask parent,
+                        Priority priority, Integer estimate,
+                        Component component, Stream stream) {
+        super(name, openedBy);
+        Assert.notNull(priority, "Priority must not be null");
+        Assert.notNull(component, "Component must not be null");
+        this.priority = priority;
+        this.estimate = estimate;
         this.component = component;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void project(Project project) {
-        this.project = project;
-    }
-
-    public BusinessAccount getOpenedBy() {
-        return openedBy;
-    }
-
-    public void setOpenedBy(final BusinessAccount openedBy) {
-        this.openedBy = openedBy;
+        this.stream = stream;
+        this.parent = parent;
     }
 
     public TaskStatus getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(final TaskStatus taskStatus) {
+    public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
 
@@ -115,7 +97,7 @@ public abstract class BusinessTask extends Activity {
         return priority;
     }
 
-    public void setPriority(final Priority priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
@@ -123,36 +105,70 @@ public abstract class BusinessTask extends Activity {
         return estimate;
     }
 
-    public void setEstimate(final Integer estimate) {
+    public void setEstimate(Integer estimate) {
         this.estimate = estimate;
     }
 
-    public BusinessAccount getAssignedTo() {
-        return assignedTo;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setAssignedTo(final BusinessAccount assignedTo) {
-        this.assignedTo = assignedTo;
+    public void setComponent(Component component) {
+        this.component = component;
+    }
+
+    public Stream getStream() {
+        return stream;
+    }
+
+    public void setStream(Stream stream) {
+        this.stream = stream;
+    }
+
+    public Set<BusinessTask> getChildTasks() {
+        return childTasks;
+    }
+
+    public void addChildTask(BusinessTask childTask) {
+        if (!childTasks.contains(childTask)) {
+            childTasks.add(childTask);
+        }
+    }
+
+    public BusinessTask getParent() {
+        return parent;
+    }
+
+    public void setParent(BusinessTask parent) {
+        this.parent = parent;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof BusinessTask)) return false;
         if (!super.equals(o)) return false;
+
         BusinessTask that = (BusinessTask) o;
-        return taskStatus == that.taskStatus &&
-                priority == that.priority &&
-                Objects.equals(estimate, that.estimate) &&
-                Objects.equals(assignedTo, that.assignedTo) &&
-                Objects.equals(openedBy, that.openedBy) &&
-                Objects.equals(project, that.project) &&
-                Objects.equals(component, that.component);
+
+        if (parent != null ? !parent.getUuid().equals(that.parent.getUuid()) : that.parent != null) return false;
+        if (taskStatus != that.taskStatus) return false;
+        if (priority != that.priority) return false;
+        if (estimate != null ? !estimate.equals(that.estimate) : that.estimate != null) return false;
+        if (!component.getUuid().equals(that.component.getUuid())) return false;
+        return stream != null ? stream.getUuid().equals(that.stream.getUuid()) : that.stream == null;
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), taskStatus, priority, estimate, assignedTo, openedBy, project, component);
+        int result = super.hashCode();
+        result = 31 * result + (parent != null ? parent.getUuid().hashCode() : 0);
+        result = 31 * result + taskStatus.hashCode();
+        result = 31 * result + priority.hashCode();
+        result = 31 * result + (estimate != null ? estimate.hashCode() : 0);
+        result = 31 * result + component.getUuid().hashCode();
+        result = 31 * result + (stream != null ? stream.getUuid().hashCode() : 0);
+        return result;
     }
-
 }
