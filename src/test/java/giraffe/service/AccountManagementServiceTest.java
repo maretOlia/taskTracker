@@ -1,8 +1,8 @@
 package giraffe.service;
 
 import giraffe.GiraffeApplicationTestCase;
-import giraffe.repository.user.AccountRepository;
-import giraffe.service.account.AccountManagementService;
+import giraffe.repository.user.UserRepository;
+import giraffe.service.account.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AccountManagementServiceTest extends GiraffeApplicationTestCase {
 
     @Autowired
-    AccountManagementService userManagementService;
+    UserManagementService userManagementService;
 
     @Autowired
-    AccountRepository accountRepository;
+    UserRepository userRepository;
 
 }

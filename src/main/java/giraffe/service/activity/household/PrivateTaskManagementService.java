@@ -28,11 +28,19 @@ public class PrivateTaskManagementService {
         return privateTaskRepository.findOne(uuid);
     }
 
-    public PrivateTask createPrivateTask(PrivateTask task) {
-        return privateTaskRepository.save(task);
+    public PrivateTask createPrivateTask(String name, String openedBy, PrivateTask.Type type, Integer term, String assignedTo, String comment) {
+
+        PrivateTask task = new PrivateTask(name, userRepository.findOne(openedBy), null, type, term);
+        if (assignedTo != null) task.setAssignedTo(userRepository.findOne(assignedTo));
+        if (comment != null) task.setComment(comment);
+
+        privateTaskRepository.save(task);
+
+        return task;
     }
 
-    public Iterable<PrivateTask> findPrivateTasksAssignedToAccount(String userUuid) {
+
+    public Iterable<PrivateTask> findPrivateTasksAssignedToUser(String userUuid) {
         return privateTaskRepository.findByAssignedTo(userRepository.findOne(userUuid));
     }
 
@@ -40,12 +48,28 @@ public class PrivateTaskManagementService {
         return privateTaskRepository.findByOpenedBy(userRepository.findOne(userUuid));
     }
 
+    public Iterable<PrivateTask> findAllSubtasksForCurrentTask(String parentUuid) {
+        return findSubtasksRecursively(privateTaskRepository.findOne(parentUuid));
+    }
+
+    private Iterable<PrivateTask> findSubtasksRecursively(PrivateTask parent) {
+        Iterable<PrivateTask> tasks = privateTaskRepository.findByParent(parent);
+
+        for (PrivateTask task : tasks) {
+            tasks = Iterables.concat(tasks, findSubtasksRecursively(task));
+        }
+
+        return tasks;
+    }
+
     @Transactional
-    public PrivateTask deletePrivateTask(String uuid, boolean withSubtasks) throws CanNotDeleteTaskWithLinkedSubtasksException {
+    public PrivateTask deletePrivateTask(String uuid, boolean withSubtasks) throws
+            CanNotDeleteTaskWithLinkedSubtasksException {
         PrivateTask task = privateTaskRepository.findOne(uuid);
 
         Iterable<PrivateTask> subtasks = privateTaskRepository.findByParent(privateTaskRepository.findOne(uuid));
-        if (!Iterables.isEmpty(subtasks) && !withSubtasks) throw new CanNotDeleteTaskWithLinkedSubtasksException(uuid);
+        if (!Iterables.isEmpty(subtasks) && !withSubtasks)
+            throw new CanNotDeleteTaskWithLinkedSubtasksException(uuid);
 
         subtasks.forEach(subtask -> {
                     subtask.setStatus(GiraffeEntity.Status.DELETED);
@@ -57,12 +81,18 @@ public class PrivateTaskManagementService {
         return privateTaskRepository.save(task);
     }
 
-    public PrivateTask addSubtask(PrivateTask subtask, String parentUuid) {
+    @Transactional
+    public PrivateTask addSubtask(String name, String openedBy, PrivateTask.Type type, Integer term, String
+            parentUuid, String assignedTo, String comment) {
         PrivateTask parent = privateTaskRepository.findOne(parentUuid);
-        subtask.setParent(parent);
-        parent.addChildTask(subtask);
+        PrivateTask subtask = new PrivateTask(name, userRepository.findOne(openedBy), parent, type, term);
+        if (assignedTo != null) subtask.setAssignedTo(userRepository.findOne(assignedTo));
+        if (comment != null) subtask.setComment(comment);
 
-        privateTaskRepository.save(parent);
+        // parent.addChildTask(subtask);
+
+        //privateTaskRepository.save(parent);
+        privateTaskRepository.save(subtask);
 
         return subtask;
     }

@@ -26,7 +26,7 @@ public class GiraffeEntity {
 
 
     public enum Status {
-        ACTIVE(1), DELETED(0);
+        DELETED(0),  ACTIVE(1);
 
         private int value;
 

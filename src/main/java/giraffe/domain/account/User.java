@@ -23,7 +23,7 @@ public class User extends GiraffeEntity implements Serializable {
     @JsonIgnore
     private String passwordHash;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_authorities",
             joinColumns = @JoinColumn(name = "user_uuid", referencedColumnName = "uuid"),
             inverseJoinColumns = @JoinColumn(name = "authority_uuid", referencedColumnName = "uuid"))

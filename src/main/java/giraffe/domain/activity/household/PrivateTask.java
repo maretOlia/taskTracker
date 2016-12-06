@@ -1,12 +1,10 @@
 package giraffe.domain.activity.household;
 
-import com.google.common.collect.Sets;
-import giraffe.domain.activity.Activity;
 import giraffe.domain.account.User;
+import giraffe.domain.activity.Activity;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
-import java.util.Set;
 
 /**
  * @author Guschcyna Olga
@@ -16,12 +14,9 @@ import java.util.Set;
 @Table(name = "private_task")
 public class PrivateTask extends Activity {
 
-    @ManyToOne
-    @JoinColumn(name = "parent_uuid")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parent_uuid", referencedColumnName="uuid")
     private PrivateTask parent;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", cascade = CascadeType.ALL)
-    private Set<PrivateTask> childTasks = Sets.newHashSet();
 
     @Column(nullable = false)
     @Enumerated
@@ -97,16 +92,6 @@ public class PrivateTask extends Activity {
         this.taskStatus = taskStatus;
     }
 
-    public Set<PrivateTask> getChildTasks() {
-        return childTasks;
-    }
-
-    public void addChildTask(PrivateTask childTask) {
-        if (!childTasks.contains(childTask)) {
-            childTasks.add(childTask);
-        }
-    }
-
     public PrivateTask getParent() {
         return parent;
     }
@@ -125,7 +110,7 @@ public class PrivateTask extends Activity {
 
         if (parent != null ? !parent.getUuid().equals(that.parent.getUuid()) : that.parent != null) return false;
         if (type != that.type) return false;
-        if (term != null ? !term.equals(that.term) : that.term != null) return false;
+        if (term != that.term) return false;
         return taskStatus == that.taskStatus;
 
     }
@@ -135,7 +120,7 @@ public class PrivateTask extends Activity {
         int result = super.hashCode();
         result = 31 * result + (parent != null ? parent.getUuid().hashCode() : 0);
         result = 31 * result + type.hashCode();
-        result = 31 * result + (term != null ? term.hashCode() : 0);
+        result = 31 * result + term.hashCode();
         result = 31 * result + taskStatus.hashCode();
         return result;
     }
