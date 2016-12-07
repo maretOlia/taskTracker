@@ -1,5 +1,6 @@
 package giraffe.service.security;
 
+import giraffe.domain.GiraffeEntity;
 import giraffe.domain.account.User;
 import giraffe.repository.user.UserRepository;
 import giraffe.security.GiraffePrivateUserDetails;
@@ -21,7 +22,7 @@ public class PrivateUserDetailsService implements UserDetailsService {
 
     @Override
     public GiraffePrivateUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       final User account = userRepository.findByLogin(username);
+       final User account = userRepository.findByLoginAndStatus(username,  GiraffeEntity.Status.ACTIVE);
 
         if (account == null)
             throw new UsernameNotFoundException("Private account with login: " + username + " not found");

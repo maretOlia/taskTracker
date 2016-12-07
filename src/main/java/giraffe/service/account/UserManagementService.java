@@ -30,7 +30,7 @@ public class UserManagementService {
 
     @Transactional
     public User createAccount(String login, String password) throws GiraffeException.AccountWithCurrentLoginExistsException {
-       if (userRepository.findByLogin(login) != null) throw new GiraffeException.AccountWithCurrentLoginExistsException(login);
+       if (userRepository.findByLoginAndStatus(login,  GiraffeEntity.Status.ACTIVE) != null) throw new GiraffeException.AccountWithCurrentLoginExistsException(login);
 
         final GiraffeAuthority authority = authorityRepository.findByRole(GiraffeAuthority.Role.USER);
 
@@ -42,12 +42,12 @@ public class UserManagementService {
     }
 
     public User findPrivateAccount(String uuid) {
-        return userRepository.findOne(uuid);
+        return userRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
     }
 
     @Transactional
     public User deletePrivateAccount(String uuid) {
-        User account = userRepository.findOne(uuid);
+        User account = userRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
         account.setStatus(GiraffeEntity.Status.DELETED);
 
         return userRepository.save(account);

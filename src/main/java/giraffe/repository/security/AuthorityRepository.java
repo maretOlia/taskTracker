@@ -1,7 +1,7 @@
 package giraffe.repository.security;
 
 import giraffe.domain.account.GiraffeAuthority;
-import org.springframework.data.repository.CrudRepository;
+import giraffe.repository.GiraffeRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  * @version 1.0.0
  */
 @Repository
-public interface AuthorityRepository extends CrudRepository<GiraffeAuthority, String> {
+public interface AuthorityRepository extends GiraffeRepository<GiraffeAuthority> {
 
     GiraffeAuthority findByRole(GiraffeAuthority.Role role);
 

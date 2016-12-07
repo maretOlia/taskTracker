@@ -2,6 +2,7 @@ package giraffe.service;
 
 import com.google.common.collect.Iterables;
 import giraffe.GiraffeApplicationTestCase;
+import giraffe.domain.GiraffeEntity;
 import giraffe.domain.GiraffeException;
 import giraffe.domain.account.GiraffeAuthority;
 import giraffe.domain.account.User;
@@ -44,7 +45,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
         user = new User("testUser", "testPassword");
         GiraffeAuthority giraffeAuthority = new GiraffeAuthority(GiraffeAuthority.Role.USER);
         authorityRepository.save(giraffeAuthority);
-        user.addAuthority(authorityRepository.findOne(giraffeAuthority.getUuid()));
+        user.addAuthority(authorityRepository.findByUuidAndStatus(giraffeAuthority.getUuid(), GiraffeEntity.Status.ACTIVE));
         giraffeAuthority.addUser(user);
         userRepository.save(user);
     }
@@ -53,7 +54,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
     public void shouldCreatePrivateTask() {
         PrivateTask task = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
 
-        assertThat(privateTaskRepository.findOne(task.getUuid()), is(equalTo(task)));
+        assertThat(privateTaskRepository.findByUuidAndStatus(task.getUuid(), GiraffeEntity.Status.ACTIVE), is(equalTo(task)));
     }
 
     @Test
@@ -62,7 +63,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
 
         PrivateTask task2 = privateTaskManagementService.addSubtask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, task1.getUuid(), null, null);
 
-        assertThat(Iterables.getFirst(privateTaskRepository.findByParent(task1), null), is(equalTo(task2)));
+        assertThat(Iterables.getFirst(privateTaskRepository.findByParentAndStatus(task1, GiraffeEntity.Status.ACTIVE), null), is(equalTo(task2)));
     }
 
     @Test
@@ -81,7 +82,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
     public void shouldFindAllTasksOpenedByAccount() {
         PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
 
-        PrivateTask task2 = new PrivateTask("testName2", user, privateTaskManagementService.findPrivateTaskByUuid(task1.getUuid()), PrivateTask.Type.EVENT, 3);
+        new PrivateTask("testName2", user, privateTaskManagementService.findPrivateTaskByUuid(task1.getUuid()), PrivateTask.Type.EVENT, 3);
         privateTaskManagementService.addSubtask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, task1.getUuid(), null, null);
 
         assertThat(Iterables.size(privateTaskManagementService.findPrivateTasksOpenedByAccount(user.getUuid())), is(2));
@@ -90,15 +91,15 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
     @Test
     public void shouldFindAllTasksAssignedToAccount() {
         PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
-        privateTaskManagementService.asignTask(task1.getUuid(), user.getUuid());
+        privateTaskManagementService.assignTask(task1.getUuid(), user.getUuid());
 
         PrivateTask task2 = privateTaskManagementService.createPrivateTask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
-        privateTaskManagementService.asignTask(task2.getUuid(), user.getUuid());
+        privateTaskManagementService.assignTask(task2.getUuid(), user.getUuid());
 
         assertThat(Iterables.size(privateTaskManagementService.findPrivateTasksAssignedToUser(user.getUuid())), is(2));
     }
 
-    //@Test
+    @Test
     public void shouldDeleteTaskWithSubtasks() throws GiraffeException.CanNotDeleteTaskWithLinkedSubtasksException {
         PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
 

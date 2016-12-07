@@ -1,5 +1,6 @@
 package giraffe.repository.user;
 
+import giraffe.domain.GiraffeEntity;
 import giraffe.domain.account.User;
 import giraffe.repository.GiraffeRepository;
 
@@ -9,6 +10,6 @@ import giraffe.repository.GiraffeRepository;
  */
 public interface UserRepository extends GiraffeRepository<User> {
 
-    User findByLogin(String login);
+    User findByLoginAndStatus(String login, GiraffeEntity.Status status);
 
 }
