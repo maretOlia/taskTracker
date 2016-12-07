@@ -3,7 +3,6 @@ package giraffe.domain.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,12 +13,12 @@ import java.util.Set;
  * @version 1.0.0
  */
 @Entity
-public class User extends GiraffeEntity implements Serializable {
+public class User extends GiraffeEntity<User> implements Serializable {
 
     @Column(nullable = false)
     private String login;
 
-    @Column(nullable = false, name="pass_hash")
+    @Column(nullable = false, name = "pass_hash")
     @JsonIgnore
     private String passwordHash;
 
@@ -30,35 +29,42 @@ public class User extends GiraffeEntity implements Serializable {
     private Set<GiraffeAuthority> authorities = Sets.newHashSet();
 
 
-    User() { }
-
-    public User(String login, String passwordHash) {
-        Assert.notNull(login, "Login Hash must not be null");
-        Assert.notNull(passwordHash, "Password Hash must not be null");
-        this.login = login;
-        this.passwordHash = passwordHash;
+    public User() {
     }
+
+    @Override
+    public User self() {
+        return this;
+    }
+
 
     public String getLogin() {
         return login;
+    }
+
+    public User setLogin(String login) {
+        this.login = login;
+        return this;
     }
 
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public User setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+        return this;
     }
 
     public Set<GiraffeAuthority> getAuthorities() {
         return authorities;
     }
 
-    public void addAuthority(GiraffeAuthority authority) {
-        if(!authorities.contains(authority)){
+    public User addAuthority(GiraffeAuthority authority) {
+        if (!authorities.contains(authority)) {
             authorities.add(authority);
         }
+        return this;
     }
 
     @Override

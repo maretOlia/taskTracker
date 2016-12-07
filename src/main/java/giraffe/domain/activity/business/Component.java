@@ -2,7 +2,6 @@ package giraffe.domain.activity.business;
 
 import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -12,7 +11,7 @@ import java.util.Set;
  * @version 1.0.0
  */
 @Entity
-public class Component extends GiraffeEntity {
+public class Component extends GiraffeEntity<Component> {
 
     @Column(nullable = false)
     private String name;
@@ -24,39 +23,42 @@ public class Component extends GiraffeEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "component", cascade = CascadeType.ALL)
     private Set<BusinessTask> businessTasks = Sets.newHashSet();
 
+
     Component() { }
 
-    public Component(String name, Project project) {
-        Assert.notNull(project, "Project must not be null");
-        Assert.notNull(name, "Name must not be null");
-        this.name = name;
-        this.project = project;
+    @Override
+    public Component self() {
+        return this;
     }
+
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Component setName(String name) {
         this.name = name;
+        return this;
     }
 
     public Project getProject() {
         return project;
     }
 
-    public void setProject(Project project) {
+    public Component setProject(Project project) {
         this.project = project;
+        return this;
     }
 
     public Set<BusinessTask> getBusinessTasks() {
         return businessTasks;
     }
 
-    public void addBusinessTask(BusinessTask businessTask) {
+    public Component addBusinessTask(BusinessTask businessTask) {
         if (businessTasks.contains(businessTask)) {
             businessTasks.add(businessTask);
         }
+        return this;
     }
 
     @Override

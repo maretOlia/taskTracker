@@ -2,7 +2,6 @@ package giraffe.domain.activity.business;
 
 import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -12,7 +11,7 @@ import java.util.Set;
  * @version 1.0.0
  */
 @Entity
-public class Stream extends GiraffeEntity {
+public class Stream extends GiraffeEntity<Stream> {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "stream", cascade = CascadeType.ALL)
     private Set<BusinessTask> backlog = Sets.newHashSet();
@@ -26,12 +25,11 @@ public class Stream extends GiraffeEntity {
 
     Stream() { }
 
-    public Stream(Long startTime, Long endTime) {
-        Assert.notNull(startTime, "Start Time must not be null");
-        Assert.notNull(endTime, "End Time must not be null");
-        this.startTime = startTime;
-        this.endTime = endTime;
+    @Override
+    public Stream self() {
+        return this;
     }
+
 
     public Set<BusinessTask> getBacklog() {
         return backlog;
@@ -47,16 +45,18 @@ public class Stream extends GiraffeEntity {
         return startTime;
     }
 
-    public void setStartTime(Long startTime) {
+    public Stream setStartTime(Long startTime) {
         this.startTime = startTime;
+        return this;
     }
 
     public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Long endTime) {
+    public Stream setEndTime(Long endTime) {
         this.endTime = endTime;
+        return self();
     }
 
     @Override

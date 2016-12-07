@@ -2,7 +2,6 @@ package giraffe.domain.activity.business;
 
 import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -12,7 +11,7 @@ import java.util.Set;
  * @version 1.0.0
  */
 @Entity
-public class Project extends GiraffeEntity {
+public class Project extends GiraffeEntity<Project> {
 
     @Column(nullable = false)
     private String name;
@@ -23,27 +22,29 @@ public class Project extends GiraffeEntity {
 
     Project() { }
 
-    public Project(String name) {
-        Assert.notNull(name, "Name must not be null");
-        this.name = name;
+    @Override
+    public Project self() {
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Project setName(String name) {
         this.name = name;
+        return this;
     }
 
     public Set<Component> getComponents() {
         return components;
     }
 
-    public void addComponent(Component component) {
+    public Project addComponent(Component component) {
         if (components.contains(component)) {
             components.add(component);
         }
+        return this;
     }
 
     @Override

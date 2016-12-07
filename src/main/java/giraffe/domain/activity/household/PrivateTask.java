@@ -1,8 +1,6 @@
 package giraffe.domain.activity.household;
 
-import giraffe.domain.account.User;
 import giraffe.domain.activity.Activity;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 
@@ -12,10 +10,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "private_task")
-public class PrivateTask extends Activity {
+public class PrivateTask extends Activity<PrivateTask> {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_uuid", referencedColumnName="uuid")
+    @JoinColumn(name = "parent_uuid", referencedColumnName = "uuid")
     private PrivateTask parent;
 
     @Column(nullable = false)
@@ -57,47 +55,49 @@ public class PrivateTask extends Activity {
         }
     }
 
-    PrivateTask() {
+
+    public PrivateTask() {
     }
 
-    public PrivateTask(String name, User openedBy, PrivateTask parent, Type type, Integer term) {
-        super(name, openedBy);
-        Assert.notNull(type, "Type must not be null");
-        this.type = type;
-        this.term = term;
-        this.parent = parent;
+    @Override
+    public PrivateTask self() {
+        return this;
     }
 
     public Type getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public PrivateTask setType(Type type) {
         this.type = type;
+        return this;
     }
 
     public Integer getTerm() {
         return term;
     }
 
-    public void setTerm(Integer term) {
+    public PrivateTask setTerm(Integer term) {
         this.term = term;
+        return this;
     }
 
     public TaskStatus getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(TaskStatus taskStatus) {
+    public PrivateTask setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
+        return this;
     }
 
     public PrivateTask getParent() {
         return parent;
     }
 
-    public void setParent(PrivateTask parent) {
+    public PrivateTask setParent(PrivateTask parent) {
         this.parent = parent;
+        return this;
     }
 
     @Override

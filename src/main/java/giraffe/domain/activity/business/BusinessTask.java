@@ -2,8 +2,6 @@ package giraffe.domain.activity.business;
 
 import com.google.common.collect.Sets;
 import giraffe.domain.activity.Activity;
-import giraffe.domain.account.User;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -14,7 +12,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "business_task")
-public class BusinessTask extends Activity {
+public class BusinessTask extends Activity<BusinessTask> {
 
     @ManyToOne
     @JoinColumn(name = "parent_uuid")
@@ -70,77 +68,78 @@ public class BusinessTask extends Activity {
         }
     }
 
+
     BusinessTask(){ }
 
-    public BusinessTask(String name, User openedBy, BusinessTask parent,
-                        Priority priority, Integer estimate,
-                        Component component, Stream stream) {
-        super(name, openedBy);
-        Assert.notNull(priority, "Priority must not be null");
-        Assert.notNull(component, "Component must not be null");
-        this.priority = priority;
-        this.estimate = estimate;
-        this.component = component;
-        this.stream = stream;
-        this.parent = parent;
+
+    @Override
+    public BusinessTask self() {
+        return this;
     }
 
     public TaskStatus getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(TaskStatus taskStatus) {
+    public BusinessTask setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
+        return this;
     }
 
     public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(Priority priority) {
+    public BusinessTask setPriority(Priority priority) {
         this.priority = priority;
+        return this;
     }
 
     public Integer getEstimate() {
         return estimate;
     }
 
-    public void setEstimate(Integer estimate) {
+    public BusinessTask setEstimate(Integer estimate) {
         this.estimate = estimate;
+        return this;
     }
 
     public Component getComponent() {
         return component;
     }
 
-    public void setComponent(Component component) {
+    public BusinessTask setComponent(Component component) {
         this.component = component;
+        return this;
     }
 
     public Stream getStream() {
         return stream;
     }
 
-    public void setStream(Stream stream) {
+    public BusinessTask setStream(Stream stream) {
         this.stream = stream;
+        return this;
     }
 
     public Set<BusinessTask> getChildTasks() {
         return childTasks;
     }
 
-    public void addChildTask(BusinessTask childTask) {
+    public BusinessTask addChildTask(BusinessTask childTask) {
         if (!childTasks.contains(childTask)) {
             childTasks.add(childTask);
         }
+        return this;
     }
 
     public BusinessTask getParent() {
         return parent;
     }
 
-    public void setParent(BusinessTask parent) {
+    public BusinessTask setParent(BusinessTask parent) {
         this.parent = parent;
+        return this;
     }
 
     @Override

@@ -2,7 +2,6 @@ package giraffe.service.activity.household;
 
 import com.google.common.collect.Iterables;
 import giraffe.domain.GiraffeEntity;
-import giraffe.domain.GiraffeException.CanNotDeleteTaskWithLinkedSubtasksException;
 import giraffe.domain.activity.household.PrivateTask;
 import giraffe.repository.activity.PrivateTaskRepository;
 import giraffe.repository.user.UserRepository;
@@ -17,26 +16,33 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PrivateTaskManagementService {
 
-    @Autowired
-    PrivateTaskRepository privateTaskRepository;
+    private PrivateTaskRepository privateTaskRepository;
+
+    private UserRepository userRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-
-    public PrivateTask findPrivateTaskByUuid(String uuid) {
-        return privateTaskRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
+    public PrivateTaskManagementService(PrivateTaskRepository privateTaskRepository, UserRepository userRepository) {
+        this.privateTaskRepository = privateTaskRepository;
+        this.userRepository = userRepository;
     }
 
-    public PrivateTask createPrivateTask(String name, String openedBy, PrivateTask.Type type, Integer term, String assignedTo, String comment) {
-
-        PrivateTask task = new PrivateTask(name, userRepository.findByUuidAndStatus(openedBy, GiraffeEntity.Status.ACTIVE), null, type, term);
-        if (assignedTo != null) task.setAssignedTo(userRepository.findByUuidAndStatus(assignedTo, GiraffeEntity.Status.ACTIVE));
-        if (comment != null) task.setComment(comment);
+    @Transactional
+    public PrivateTask createPrivateTask(PrivateTask task, String openedByUuid, String assignedToUuid, String parentUuid) {
+        task.setOpenedBy(userRepository.findByUuidAndStatus(openedByUuid, GiraffeEntity.Status.ACTIVE));
+        if (parentUuid != null) task.setParent(privateTaskRepository.findByUuidAndStatus(parentUuid, GiraffeEntity.Status.ACTIVE));
+        if (assignedToUuid != null) task.setAssignedTo(userRepository.findByUuidAndStatus(assignedToUuid, GiraffeEntity.Status.ACTIVE));
 
         privateTaskRepository.save(task);
 
         return task;
+    }
+
+    @Transactional
+    public PrivateTask assignTask(String taskUuid, String userUuuid) {
+        PrivateTask task = privateTaskRepository.findByUuidAndStatus(taskUuid, GiraffeEntity.Status.ACTIVE);
+        task.setAssignedTo(userRepository.findByUuidAndStatus(userUuuid, GiraffeEntity.Status.ACTIVE));
+
+        return privateTaskRepository.save(task);
     }
 
 
@@ -63,12 +69,10 @@ public class PrivateTaskManagementService {
     }
 
     @Transactional
-    public PrivateTask deletePrivateTask(String uuid, boolean withSubtasks) throws CanNotDeleteTaskWithLinkedSubtasksException {
+    public PrivateTask deletePrivateTask(String uuid) {
         PrivateTask task = privateTaskRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
 
-        Iterable<PrivateTask> subtasks = privateTaskRepository.findByParentAndStatus(privateTaskRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE), GiraffeEntity.Status.ACTIVE);
-        if (!Iterables.isEmpty(subtasks) && !withSubtasks)
-            throw new CanNotDeleteTaskWithLinkedSubtasksException(uuid);
+        Iterable<PrivateTask> subtasks = findAllSubtasksForCurrentTask(uuid);
 
         subtasks.forEach(subtask -> {
                     subtask.setStatus(GiraffeEntity.Status.DELETED);
@@ -76,26 +80,6 @@ public class PrivateTaskManagementService {
                 }
         );
         task.setStatus(GiraffeEntity.Status.DELETED);
-
-        return privateTaskRepository.save(task);
-    }
-
-    @Transactional
-    public PrivateTask addSubtask(String name, String openedBy, PrivateTask.Type type, Integer term, String
-            parentUuid, String assignedTo, String comment) {
-        PrivateTask parent = privateTaskRepository.findByUuidAndStatus(parentUuid, GiraffeEntity.Status.ACTIVE);
-        PrivateTask subtask = new PrivateTask(name, userRepository.findByUuidAndStatus(openedBy, GiraffeEntity.Status.ACTIVE), parent, type, term);
-        if (assignedTo != null) subtask.setAssignedTo(userRepository.findByUuidAndStatus(assignedTo, GiraffeEntity.Status.ACTIVE));
-        if (comment != null) subtask.setComment(comment);
-
-        privateTaskRepository.save(subtask);
-
-        return subtask;
-    }
-
-    public PrivateTask assignTask(String taskUuid, String userUuuid) {
-        PrivateTask task = privateTaskRepository.findByUuidAndStatus(taskUuid, GiraffeEntity.Status.ACTIVE);
-        task.setAssignedTo(userRepository.findByUuidAndStatus(userUuuid, GiraffeEntity.Status.ACTIVE));
 
         return privateTaskRepository.save(task);
     }

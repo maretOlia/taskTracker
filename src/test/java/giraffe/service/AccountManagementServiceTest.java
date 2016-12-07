@@ -11,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class AccountManagementServiceTest extends GiraffeApplicationTestCase {
 
-    @Autowired
-    UserManagementService userManagementService;
+    private UserManagementService userManagementService;
+
+    private UserRepository userRepository;
 
     @Autowired
-    UserRepository userRepository;
-
+    public AccountManagementServiceTest(UserManagementService userManagementService, UserRepository userRepository) {
+        this.userManagementService = userManagementService;
+        this.userRepository = userRepository;
+    }
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
  * @version 1.0.0
  */
 @MappedSuperclass
-public class GiraffeEntity {
+public abstract class GiraffeEntity<T extends GiraffeEntity> {
 
     @Id
     @Column(nullable = false)
@@ -52,16 +52,20 @@ public class GiraffeEntity {
         return timeDeleted;
     }
 
-    public void setTimeDeleted(Long timeDeleted) {
+    public T setTimeDeleted(Long timeDeleted) {
         this.timeDeleted = timeDeleted;
+        return self();
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    abstract protected T self();
+
+    public T setStatus(Status status) {
         this.status = status;
+        return self();
     }
 
     @Override

@@ -4,6 +4,8 @@ import giraffe.domain.GiraffeEntity;
 import giraffe.domain.GiraffeException;
 import giraffe.domain.account.GiraffeAuthority;
 import giraffe.domain.account.User;
+import giraffe.domain.activity.household.PrivateTask;
+import giraffe.repository.activity.PrivateTaskRepository;
 import giraffe.repository.security.AuthorityRepository;
 import giraffe.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,31 +14,38 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Guschcyna Olga     
+ * @author Guschcyna Olga
  * @version 1.0.0
  */
 @Service
 public class UserManagementService {
 
-    @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    private AuthorityRepository authorityRepository;
+
+    private PrivateTaskRepository privateTaskRepository;
+
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    AuthorityRepository authorityRepository;
-
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    public UserManagementService(UserRepository userRepository, AuthorityRepository authorityRepository, PrivateTaskRepository privateTaskRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.authorityRepository = authorityRepository;
+        this.privateTaskRepository = privateTaskRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional
     public User createAccount(String login, String password) throws GiraffeException.AccountWithCurrentLoginExistsException {
-       if (userRepository.findByLoginAndStatus(login,  GiraffeEntity.Status.ACTIVE) != null) throw new GiraffeException.AccountWithCurrentLoginExistsException(login);
+        if (userRepository.findByLoginAndStatus(login, GiraffeEntity.Status.ACTIVE) != null)
+            throw new GiraffeException.AccountWithCurrentLoginExistsException(login);
 
-        final GiraffeAuthority authority = authorityRepository.findByRole(GiraffeAuthority.Role.USER);
-
-        final String passwordHash = passwordEncoder.encode(password);
-        final User user = new User(login, passwordHash);
-        user.addAuthority(authority);
+        String passwordHash = passwordEncoder.encode(password);
+        User user = new User()
+                .setLogin(login)
+                .setPasswordHash(passwordHash)
+                .addAuthority(authorityRepository.findByRole(GiraffeAuthority.Role.USER));
 
         return userRepository.save(user);
     }
@@ -47,10 +56,17 @@ public class UserManagementService {
 
     @Transactional
     public User deletePrivateAccount(String uuid) {
-        User account = userRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
-        account.setStatus(GiraffeEntity.Status.DELETED);
+        User user = userRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
+        user.setStatus(GiraffeEntity.Status.DELETED);
 
-        return userRepository.save(account);
+        Iterable<PrivateTask> userTasks = privateTaskRepository.findByOpenedByAndStatus(user, GiraffeEntity.Status.ACTIVE);
+        userTasks.forEach(task -> {
+            task.setStatus(GiraffeEntity.Status.DELETED);
+            privateTaskRepository.save(task);
+
+        });
+
+        return userRepository.save(user);
     }
 
 }

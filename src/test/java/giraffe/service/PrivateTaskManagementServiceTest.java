@@ -3,7 +3,6 @@ package giraffe.service;
 import com.google.common.collect.Iterables;
 import giraffe.GiraffeApplicationTestCase;
 import giraffe.domain.GiraffeEntity;
-import giraffe.domain.GiraffeException;
 import giraffe.domain.account.GiraffeAuthority;
 import giraffe.domain.account.User;
 import giraffe.domain.activity.household.PrivateTask;
@@ -42,70 +41,143 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
 
     @Before
     public void createAccount() {
-        user = new User("testUser", "testPassword");
-        GiraffeAuthority giraffeAuthority = new GiraffeAuthority(GiraffeAuthority.Role.USER);
+        user = new User()
+                .setLogin("testUser")
+                .setPasswordHash("testPassword");
+
+        GiraffeAuthority giraffeAuthority = new GiraffeAuthority();
+        giraffeAuthority.setRole(GiraffeAuthority.Role.USER);
         authorityRepository.save(giraffeAuthority);
+
         user.addAuthority(authorityRepository.findByUuidAndStatus(giraffeAuthority.getUuid(), GiraffeEntity.Status.ACTIVE));
         giraffeAuthority.addUser(user);
+
         userRepository.save(user);
     }
 
     @Test
     public void shouldCreatePrivateTask() {
-        PrivateTask task = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
+        PrivateTask task = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName1");
+
+       privateTaskManagementService.createPrivateTask(task, user.getUuid(), null, null);
 
         assertThat(privateTaskRepository.findByUuidAndStatus(task.getUuid(), GiraffeEntity.Status.ACTIVE), is(equalTo(task)));
     }
 
     @Test
     public void shouldAddSubtaskToCurrentTask() {
-        PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
+        PrivateTask task1 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName1");
 
-        PrivateTask task2 = privateTaskManagementService.addSubtask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, task1.getUuid(), null, null);
+        privateTaskManagementService.createPrivateTask(task1, user.getUuid(), null, null);
+
+        PrivateTask task2 = new PrivateTask()
+                .setType(PrivateTask.Type.GIFT)
+                .setTerm(3)
+                .setName("testName2");
+
+        privateTaskManagementService.createPrivateTask(task2, user.getUuid(), null, task1.getUuid());
 
         assertThat(Iterables.getFirst(privateTaskRepository.findByParentAndStatus(task1, GiraffeEntity.Status.ACTIVE), null), is(equalTo(task2)));
     }
 
     @Test
     public void shouldFindAllSubtasksForCurrentTask() {
-        PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
+        PrivateTask task1 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName1");
 
-        privateTaskManagementService.addSubtask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, task1.getUuid(), null, null);
-        PrivateTask task3 = privateTaskManagementService.addSubtask("testName3", user.getUuid(), PrivateTask.Type.EVENT, 5, task1.getUuid(), null, null);
-        privateTaskManagementService.addSubtask("testName4", user.getUuid(), PrivateTask.Type.EVENT, 5, task3.getUuid(), null, null);
+        privateTaskManagementService.createPrivateTask(task1, user.getUuid(), null, null);
 
-        assertThat(Iterables.size(privateTaskManagementService.findAllSubtasksForCurrentTask(task1.getUuid())), is(3));
+        PrivateTask task2 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName2");
+
+        privateTaskManagementService.createPrivateTask(task2, user.getUuid(), null, task1.getUuid());
+
+        PrivateTask task3 = new PrivateTask()
+                .setType(PrivateTask.Type.GIFT)
+                .setTerm(3)
+                .setName("testName3");
+
+        privateTaskManagementService.createPrivateTask(task3, user.getUuid(), null, task2.getUuid());
+
+        assertThat(Iterables.size(privateTaskManagementService.findAllSubtasksForCurrentTask(task1.getUuid())), is(2));
     }
 
 
     @Test
     public void shouldFindAllTasksOpenedByAccount() {
-        PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
+        PrivateTask task1 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName1");
 
-        new PrivateTask("testName2", user, privateTaskManagementService.findPrivateTaskByUuid(task1.getUuid()), PrivateTask.Type.EVENT, 3);
-        privateTaskManagementService.addSubtask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, task1.getUuid(), null, null);
+        privateTaskManagementService.createPrivateTask(task1, user.getUuid(), null, task1.getUuid());
+
+        PrivateTask task2 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName2");
+
+        privateTaskManagementService.createPrivateTask(task2, user.getUuid(), null, task2.getUuid());
 
         assertThat(Iterables.size(privateTaskManagementService.findPrivateTasksOpenedByAccount(user.getUuid())), is(2));
     }
 
     @Test
     public void shouldFindAllTasksAssignedToAccount() {
-        PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
-        privateTaskManagementService.assignTask(task1.getUuid(), user.getUuid());
+        PrivateTask task1 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName1");
 
-        PrivateTask task2 = privateTaskManagementService.createPrivateTask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
+        privateTaskManagementService.createPrivateTask(task1, user.getUuid(), null, task1.getUuid());
+
+        PrivateTask task2 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName2");
+
+        privateTaskManagementService.createPrivateTask(task2, user.getUuid(), null, task2.getUuid());
+
+        privateTaskManagementService.assignTask(task1.getUuid(), user.getUuid());
         privateTaskManagementService.assignTask(task2.getUuid(), user.getUuid());
 
         assertThat(Iterables.size(privateTaskManagementService.findPrivateTasksAssignedToUser(user.getUuid())), is(2));
     }
 
     @Test
-    public void shouldDeleteTaskWithSubtasks() throws GiraffeException.CanNotDeleteTaskWithLinkedSubtasksException {
-        PrivateTask task1 = privateTaskManagementService.createPrivateTask("testName1", user.getUuid(), PrivateTask.Type.EVENT, 3, null, null);
+    public void shouldDeleteTaskWithSubtasks() {
+        PrivateTask task1 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName1");
 
-        privateTaskManagementService.addSubtask("testName2", user.getUuid(), PrivateTask.Type.EVENT, 3, task1.getUuid(), null, null);
+        privateTaskManagementService.createPrivateTask(task1, user.getUuid(), null, null);
 
-        privateTaskManagementService.deletePrivateTask(task1.getUuid(), true);
+        PrivateTask task2 = new PrivateTask()
+                .setType(PrivateTask.Type.EVENT)
+                .setTerm(3)
+                .setName("testName2");
+
+        privateTaskManagementService.createPrivateTask(task2, user.getUuid(), null, task1.getUuid());
+
+        PrivateTask task3 = new PrivateTask()
+                .setType(PrivateTask.Type.GIFT)
+                .setTerm(3)
+                .setName("testName3");
+
+        privateTaskManagementService.createPrivateTask(task3, user.getUuid(), null, task2.getUuid());
+
+        privateTaskManagementService.deletePrivateTask(task1.getUuid());
 
         assertThat(Iterables.size(privateTaskManagementService.findPrivateTasksOpenedByAccount(user.getUuid())), is(0));
     }

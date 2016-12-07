@@ -13,18 +13,6 @@ abstract public class GiraffeException extends Exception {
     abstract public Integer getErrorCode();
 
 
-    public static class CanNotDeleteTaskWithLinkedSubtasksException extends GiraffeException {
-
-        public CanNotDeleteTaskWithLinkedSubtasksException(String uuid) {
-            super("Can not delete task with uuid: " + uuid + ". Current task have linked subtasks");
-        }
-
-        @Override
-        public Integer getErrorCode() {
-            return 1000;
-        }
-    }
-
     public static class AccountWithCurrentLoginExistsException extends GiraffeException {
 
         public AccountWithCurrentLoginExistsException(String login) {

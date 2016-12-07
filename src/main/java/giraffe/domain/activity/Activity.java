@@ -3,7 +3,6 @@ package giraffe.domain.activity;
 import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
 import giraffe.domain.account.User;
-import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -13,7 +12,7 @@ import java.util.Set;
  * @version 1.0.0
  */
 @MappedSuperclass
-public class Activity extends GiraffeEntity {
+public abstract class Activity<T extends Activity> extends GiraffeEntity<T> {
 
     @Column(nullable = false)
     protected String name;
@@ -33,42 +32,41 @@ public class Activity extends GiraffeEntity {
     protected Set<Image> imgs = Sets.newHashSet();
 
 
-    protected Activity() {
-    }
-
-    protected Activity(String name, User openedBy) {
-        super();
-        Assert.notNull(name, "Name must not be null");
-        Assert.notNull(openedBy, "Opened By must not be null");
-        this.name = name;
-        this.openedBy = openedBy;
-    }
+    protected Activity() { }
 
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public T setName(String name) {
         this.name = name;
+        return self();
     }
 
     public String getComment() {
         return comment;
     }
 
-    public void setComment(String comment) {
+    public T setComment(String comment) {
         this.comment = comment;
+        return self();
+    }
+
+    public T setOpenedBy(User openedBy) {
+        this.openedBy = openedBy;
+        return self();
     }
 
     public Set<Image> getImgs() {
         return imgs;
     }
 
-    public void addImg(Image img) {
+    public T addImg(Image img) {
         if (imgs.contains(img)) {
             imgs.add(img);
         }
+        return self();
     }
 
     public User getOpenedBy() {
@@ -79,8 +77,9 @@ public class Activity extends GiraffeEntity {
         return assignedTo;
     }
 
-    public void setAssignedTo(User assignedTo) {
+    public T setAssignedTo(User assignedTo) {
         this.assignedTo = assignedTo;
+        return self();
     }
 
 

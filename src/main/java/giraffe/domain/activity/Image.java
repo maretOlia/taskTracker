@@ -1,7 +1,6 @@
 package giraffe.domain.activity;
 
 import giraffe.domain.GiraffeEntity;
-import org.springframework.util.Assert;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,23 +10,26 @@ import javax.persistence.Entity;
  * @version 1.0.0
  */
 @Entity
-public class Image extends GiraffeEntity {
+public class Image extends GiraffeEntity<Image> {
 
     @Column(name = "path", nullable = false)
     private String path;
 
 
-    public Image(String path) {
-        Assert.notNull(path, "Path must not be null");
-        this.path = path;
+    public Image() { }
+
+    @Override
+    public Image self() {
+        return this;
     }
 
     public String getPath() {
         return path;
     }
 
-    public void setPath(String path) {
+    public Image setPath(String path) {
         this.path = path;
+        return self();
     }
 
 

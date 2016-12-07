@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.util.Assert;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import java.util.Set;
 
 /**
@@ -15,7 +17,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "authority")
-public class GiraffeAuthority extends GiraffeEntity implements GrantedAuthority {
+public class GiraffeAuthority extends GiraffeEntity<GiraffeAuthority> implements GrantedAuthority {
 
     @Column(nullable = false)
     private Role role;
@@ -25,11 +27,12 @@ public class GiraffeAuthority extends GiraffeEntity implements GrantedAuthority 
     private Set<User> users = Sets.newHashSet();
 
 
-    GiraffeAuthority() { }
+    public GiraffeAuthority() {
+    }
 
-    public GiraffeAuthority(Role role) {
-        Assert.notNull(role, "Role must not be null");
-        this.role = role;
+    @Override
+    public GiraffeAuthority self() {
+        return this;
     }
 
 
@@ -58,8 +61,9 @@ public class GiraffeAuthority extends GiraffeEntity implements GrantedAuthority 
         return role;
     }
 
-    public void setRole(Role role) {
+    public GiraffeAuthority setRole(Role role) {
         this.role = role;
+        return this;
     }
 
     public Set<User> getUsers() {
