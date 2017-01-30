@@ -1,7 +1,7 @@
 package giraffe.service;
 
-import giraffe.GiraffeApplicationTestCase;
-import giraffe.repository.user.UserRepository;
+import giraffe.GiraffeTrackerApplicationTestCase;
+import giraffe.repository.UserRepository;
 import giraffe.service.account.UserManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-public class AccountManagementServiceTest extends GiraffeApplicationTestCase {
+public class AccountManagementServiceTest extends GiraffeTrackerApplicationTestCase {
 
     private UserManagementService userManagementService;
 

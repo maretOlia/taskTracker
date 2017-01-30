@@ -2,7 +2,7 @@ package giraffe.domain.activity;
 
 import com.google.common.collect.Sets;
 import giraffe.domain.GiraffeEntity;
-import giraffe.domain.account.User;
+import giraffe.domain.User;
 
 import javax.persistence.*;
 import java.util.Set;

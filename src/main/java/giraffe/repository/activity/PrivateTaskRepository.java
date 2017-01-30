@@ -1,7 +1,7 @@
 package giraffe.repository.activity;
 
 import giraffe.domain.GiraffeEntity;
-import giraffe.domain.account.User;
+import giraffe.domain.User;
 import giraffe.domain.activity.household.PrivateTask;
 import giraffe.repository.GiraffeRepository;
 import org.springframework.stereotype.Repository;

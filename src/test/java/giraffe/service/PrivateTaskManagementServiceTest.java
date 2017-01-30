@@ -1,14 +1,14 @@
 package giraffe.service;
 
 import com.google.common.collect.Iterables;
-import giraffe.GiraffeApplicationTestCase;
+import giraffe.GiraffeTrackerApplicationTestCase;
+import giraffe.domain.GiraffeAuthority;
 import giraffe.domain.GiraffeEntity;
-import giraffe.domain.account.GiraffeAuthority;
-import giraffe.domain.account.User;
+import giraffe.domain.User;
 import giraffe.domain.activity.household.PrivateTask;
+import giraffe.repository.AuthorityRepository;
+import giraffe.repository.UserRepository;
 import giraffe.repository.activity.PrivateTaskRepository;
-import giraffe.repository.security.AuthorityRepository;
-import giraffe.repository.user.UserRepository;
 import giraffe.service.activity.household.PrivateTaskManagementService;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
  * @author Guschcyna Olga
  * @version 1.0.0
  */
-public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase {
+public class PrivateTaskManagementServiceTest extends GiraffeTrackerApplicationTestCase {
 
     @Autowired
     PrivateTaskRepository privateTaskRepository;
@@ -43,6 +43,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
     public void createAccount() {
         user = new User()
                 .setLogin("testUser")
+                .setUserType(User.UserType.REGISTERED)
                 .setPasswordHash("testPassword");
 
         GiraffeAuthority giraffeAuthority = new GiraffeAuthority();
@@ -64,7 +65,7 @@ public class PrivateTaskManagementServiceTest extends GiraffeApplicationTestCase
 
        privateTaskManagementService.createPrivateTask(task, user.getUuid(), null, null);
 
-        assertThat(privateTaskRepository.findByUuidAndStatus(task.getUuid(), GiraffeEntity.Status.ACTIVE), is(equalTo(task)));
+       assertThat(privateTaskRepository.findByUuidAndStatus(task.getUuid(), GiraffeEntity.Status.ACTIVE), is(equalTo(task)));
     }
 
     @Test

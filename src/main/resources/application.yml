@@ -1,0 +1,22 @@
+server:
+ contextPath: /giraffe
+ port: 8082
+ error:
+  whitelabel:
+   enabled: false
+
+security:
+ basic:
+  enabled: false
+
+logging:
+ level:
+  org:
+   hibernate:
+    SQL: DEBUG
+    security: DEBUG
+
+
+
+
+

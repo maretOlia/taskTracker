@@ -1,15 +1,15 @@
 package giraffe.service.account;
 
+import giraffe.AccountWithCurrentLoginExistsException;
+import giraffe.domain.GiraffeAuthority;
 import giraffe.domain.GiraffeEntity;
 import giraffe.domain.GiraffeException;
-import giraffe.domain.account.GiraffeAuthority;
-import giraffe.domain.account.User;
+import giraffe.domain.User;
 import giraffe.domain.activity.household.PrivateTask;
+import giraffe.repository.AuthorityRepository;
+import giraffe.repository.UserRepository;
 import giraffe.repository.activity.PrivateTaskRepository;
-import giraffe.repository.security.AuthorityRepository;
-import giraffe.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,25 +26,25 @@ public class UserManagementService {
 
     private PrivateTaskRepository privateTaskRepository;
 
-    private PasswordEncoder passwordEncoder;
+    //private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserManagementService(UserRepository userRepository, AuthorityRepository authorityRepository, PrivateTaskRepository privateTaskRepository, PasswordEncoder passwordEncoder) {
+    public UserManagementService(UserRepository userRepository, AuthorityRepository authorityRepository, PrivateTaskRepository privateTaskRepository /*PasswordEncoder passwordEncoder*/) {
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
         this.privateTaskRepository = privateTaskRepository;
-        this.passwordEncoder = passwordEncoder;
+       // this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
-    public User createAccount(String login, String password) throws GiraffeException.AccountWithCurrentLoginExistsException {
+    public User createAccount(String login, String password) throws AccountWithCurrentLoginExistsException {
         if (userRepository.findByLoginAndStatus(login, GiraffeEntity.Status.ACTIVE) != null)
-            throw new GiraffeException.AccountWithCurrentLoginExistsException(login);
+            throw new AccountWithCurrentLoginExistsException(login);
 
-        String passwordHash = passwordEncoder.encode(password);
+        //String passwordHash = passwordEncoder.encode(password);
         User user = new User()
                 .setLogin(login)
-                .setPasswordHash(passwordHash)
+                .setPasswordHash(password) //TODO encode password
                 .addAuthority(authorityRepository.findByRole(GiraffeAuthority.Role.USER));
 
         return userRepository.save(user);
