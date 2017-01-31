@@ -1,4 +1,4 @@
-package giraffe.controllers.account;
+package giraffe.controllers;
 
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;

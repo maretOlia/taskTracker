@@ -1,5 +1,5 @@
 server:
- contextPath: /giraffe
+ contextPath: /tracker
  port: 8082
  error:
   whitelabel:

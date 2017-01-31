@@ -36,7 +36,6 @@ public class AccountController {
     @Autowired
     private TokenStore tokenStore;
 
-
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     HttpEntity<Resource<User>> createAccount(@RequestParam String login, @RequestParam String password) throws AccountWithCurrentLoginExistsException {
@@ -46,7 +45,6 @@ public class AccountController {
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
-    //@PreAuthorize("#oauth2.hasScope('read')")
     @PreAuthorize("hasRole('USER')")
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.FOUND)
@@ -63,7 +61,6 @@ public class AccountController {
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
-    //@PreAuthorize("#oauth2.hasScope('write')")
     @PreAuthorize("hasRole('USER')")
     @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
