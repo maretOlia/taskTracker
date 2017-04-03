@@ -13,13 +13,12 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 /**
- * @author Guschcyna Olga
- * @version 1.0.0
+ * @author Olga Gushchyna
+ * @version 0.0.1
  */
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
-
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -33,7 +32,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/console/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/favicon.ico").permitAll()
                 .antMatchers(HttpMethod.GET, "/error").permitAll()
-                .antMatchers(HttpMethod.POST, "/account").permitAll()
+                .antMatchers(HttpMethod.POST, "/user").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
 
                 //defined Admin only API area
@@ -56,7 +55,5 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         registrationBean.addUrlMappings("/console/*"); //default db url: "jdbc:h2:mem:testdb"
         return registrationBean;
     }
-
-
 
 }

@@ -13,8 +13,8 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import java.io.IOException;
 
 /**
- * @author Guschcyna Olga
- * @version 1.0.0
+ * @author Olga Gushchyna
+ * @version 0.0.1
  */
 @Configuration
 public class JWTTokenConfig {
@@ -30,7 +30,7 @@ public class JWTTokenConfig {
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         Resource resource = new ClassPathResource("publicKey.txt");
-        String publicKey = null;
+        String publicKey;
         try {
             publicKey = IOUtils.toString(resource.getInputStream(), "UTF-8");
         } catch (final IOException e) {
