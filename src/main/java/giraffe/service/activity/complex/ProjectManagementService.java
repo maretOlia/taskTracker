@@ -10,6 +10,8 @@ import giraffe.repository.complex.ComplexTaskRepository;
 import giraffe.repository.complex.PeriodRepository;
 import giraffe.repository.complex.ProjectRepository;
 import giraffe.repository.complex.security.ProjectUserRightsRepository;
+import giraffe.service.activity.ActivityManagementService;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 0.0.1
  */
 @Service
-public class ProjectManagementService {
+public class ProjectManagementService extends ActivityManagementService<Project>{
 
     private ProjectRepository projectRepository;
 
@@ -54,7 +56,7 @@ public class ProjectManagementService {
             if (projectUserRightsRepository.findByUserAndProjectAndRightsIn(user, project, Sets.newHashSet(ProjectUserRights.Rights.READ_WRITE)) == null)
                 throw new GiraffeAccessDeniedException(userUuid, oldProject.getUuid());
 
-             return projectRepository.save(project);
+            return projectRepository.save(project);
         }
 
         // create new Project
@@ -82,6 +84,22 @@ public class ProjectManagementService {
                 .setProject(project)
                 .setUser(userRepository.findByUuidAndStatus(userToAddUuid, GiraffeEntity.Status.ACTIVE))
                 .setRights(rights));
+
+        return project;
+    }
+
+    @Override
+    @Transactional(readOnly = true, rollbackFor = {GiraffeAccessDeniedException.class, NoActivityWithCurrentUuidException.class})
+    public Project findByUuid(String userUuid, String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+        Project project = projectRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
+
+        if (project == null) throw new NoActivityWithCurrentUuidException(uuid);
+
+        if (projectUserRightsRepository.findByUserAndProjectAndRightsIn(
+                userRepository.findByUuidAndStatus(userUuid, GiraffeEntity.Status.ACTIVE),
+                project,
+                Sets.newHashSet(ProjectUserRights.Rights.READ, ProjectUserRights.Rights.READ_WRITE)) == null)
+            throw new GiraffeAccessDeniedException(userUuid, project.getUuid());
 
         return project;
     }

@@ -10,7 +10,7 @@ import javax.persistence.*;
  * @version 1.0.0
  */
 @MappedSuperclass
-abstract public class Activity<T extends Activity> extends GiraffeEntity<T> {
+public abstract class Activity<T extends Activity> extends GiraffeEntity<T> {
 
     @Column(nullable = false)
     protected String name;

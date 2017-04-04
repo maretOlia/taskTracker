@@ -5,6 +5,8 @@ import giraffe.domain.activity.simple.SimpleToDoList;
 import giraffe.repository.UserRepository;
 import giraffe.repository.simple.SimpleTaskRepository;
 import giraffe.repository.simple.SimpleToDoListRepository;
+import giraffe.service.activity.ActivityManagementService;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import giraffe.service.activity.complex.GiraffeAccessDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 0.0.1
  */
 @Service
-public class SimpleToDoListManagementService {
+public class SimpleToDoListManagementService extends ActivityManagementService<SimpleToDoList> {
 
     private SimpleToDoListRepository simpleToDoListRepository;
 
@@ -46,6 +48,19 @@ public class SimpleToDoListManagementService {
 
         // create new SimpleToDoList
         return simpleToDoListRepository.save(simpleToDoList.setCreatedBy(userRepository.findByUuidAndStatus(userUuid, GiraffeEntity.Status.ACTIVE)));
+    }
+
+    @Override
+    @Transactional(readOnly = true, rollbackFor = {GiraffeAccessDeniedException.class, NoActivityWithCurrentUuidException.class})
+    public SimpleToDoList findByUuid(String userUuid, String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+        SimpleToDoList simpleToDoList = simpleToDoListRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
+
+        if (simpleToDoList == null) throw new NoActivityWithCurrentUuidException(uuid);
+
+        if (!simpleToDoList.getCreatedBy().getUuid().equals(userUuid))
+            throw new GiraffeAccessDeniedException(userUuid, simpleToDoList.getUuid());
+
+        return simpleToDoList;
     }
 
     @Transactional(readOnly = true)

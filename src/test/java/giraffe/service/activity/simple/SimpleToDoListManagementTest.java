@@ -7,6 +7,7 @@ import giraffe.domain.activity.simple.SimpleTask;
 import giraffe.domain.activity.simple.SimpleToDoList;
 import giraffe.repository.simple.SimpleTaskRepository;
 import giraffe.repository.simple.SimpleToDoListRepository;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import giraffe.service.activity.complex.GiraffeAccessDeniedException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,12 @@ public class SimpleToDoListManagementTest extends SimpleActivitiesManagementTest
         assertThat(Iterables.size(simpleToDoListManagementService.findByCreatedBy(user.getUuid())), is(2));
     }
 
+    @Test
+    public void shouldFindByUuid() throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+        SimpleToDoList myList = simpleToDoListRepository.save(createSimpleToDoList().setCreatedBy(user));
+
+        assertThat(simpleToDoListManagementService.findByUuid(user.getUuid(), myList.getUuid()), is(equalTo(myList)));
+    }
 
     @Test
     public void shouldDeleteSimpleToDoList() throws GiraffeAccessDeniedException {
@@ -94,6 +101,11 @@ public class SimpleToDoListManagementTest extends SimpleActivitiesManagementTest
 
         User otherUser = createUser("otherUser");
         simpleToDoListManagementService.delete(otherUser.getUuid(), list.getUuid());
+    }
+
+    @Test(expected = NoActivityWithCurrentUuidException.class)
+    public void shouldThrowNoActivityWithCurrentUuidException() throws NoActivityWithCurrentUuidException, GiraffeAccessDeniedException {
+        simpleToDoListManagementService.findByUuid(user.getUuid(), "fake-uuid");
     }
 
 }

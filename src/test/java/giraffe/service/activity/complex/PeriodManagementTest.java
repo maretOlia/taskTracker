@@ -10,6 +10,7 @@ import giraffe.domain.activity.complex.security.ProjectUserRights;
 import giraffe.repository.complex.PeriodRepository;
 import giraffe.repository.complex.ProjectRepository;
 import giraffe.repository.complex.security.ProjectUserRightsRepository;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -75,6 +76,20 @@ public class PeriodManagementTest extends ComplexActivitiesManagementTestCase {
     }
 
     @Test
+    public void shouldFindByUuid() throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException{
+        Project myProject = projectRepository.save(createBasicProject().setCreatedBy(user));
+        projectUserRightsRepository.save(createProjectUserRights(myProject, ProjectUserRights.Rights.READ));
+        Period myPeriod = periodRepository.save(new Period()
+                .setName("myName")
+                .setTimeScheduledToStart(System.currentTimeMillis())
+                .setTimeScheduledToFinish(System.currentTimeMillis() + 3000)
+                .setCreatedBy(user)
+                .setProject(myProject));
+
+        assertThat(periodManagementService.findByUuid(user.getUuid(), myPeriod.getUuid()), is(equalTo(myPeriod)));
+    }
+
+    @Test
     public void shouldFindByProject() throws GiraffeAccessDeniedException {
         Project myProject = projectRepository.save(createBasicProject().setCreatedBy(user));
         projectUserRightsRepository.save(createProjectUserRights(myProject, ProjectUserRights.Rights.READ));
@@ -134,6 +149,11 @@ public class PeriodManagementTest extends ComplexActivitiesManagementTestCase {
         User otherUser = createUser("otherUser");
 
         periodManagementService.delete(otherUser.getUuid(), myPeriod.getUuid());
+    }
+
+    @Test(expected = NoActivityWithCurrentUuidException.class)
+    public void shouldThrowNoActivityWithCurrentUuidException() throws NoActivityWithCurrentUuidException, GiraffeAccessDeniedException {
+        periodManagementService.findByUuid(user.getUuid(), "fake-uuid");
     }
 
 }

@@ -11,6 +11,8 @@ import giraffe.repository.complex.ComplexTaskRepository;
 import giraffe.repository.complex.PeriodRepository;
 import giraffe.repository.complex.ProjectRepository;
 import giraffe.repository.complex.security.ProjectUserRightsRepository;
+import giraffe.service.activity.ActivityManagementService;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 0.0.1
  */
 @Service
-public class PeriodManagementService {
+public class PeriodManagementService extends ActivityManagementService<Period> {
 
     private PeriodRepository periodRepository;
 
@@ -58,6 +60,23 @@ public class PeriodManagementService {
         if (oldPeriod != null) return periodRepository.save(period.setProject(oldPeriod.getProject()));
 
         return periodRepository.save(period.setProject(project));
+    }
+
+    @Override
+    @Transactional(readOnly = true, rollbackFor = {GiraffeAccessDeniedException.class, NoActivityWithCurrentUuidException.class})
+    public Period findByUuid(String userUuid, String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+        Period period = periodRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
+
+        if (period == null) throw new NoActivityWithCurrentUuidException(uuid);
+
+        Project project = period.getProject();
+        if (projectUserRightsRepository.findByUserAndProjectAndRightsIn(
+                userRepository.findByUuidAndStatus(userUuid, GiraffeEntity.Status.ACTIVE),
+                project,
+                Sets.newHashSet(ProjectUserRights.Rights.READ, ProjectUserRights.Rights.READ_WRITE)) == null)
+            throw new GiraffeAccessDeniedException(userUuid, project.getUuid());
+
+        return period;
     }
 
     @Transactional(readOnly = true, rollbackFor = GiraffeAccessDeniedException.class)

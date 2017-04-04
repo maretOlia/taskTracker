@@ -7,6 +7,7 @@ import giraffe.domain.activity.simple.SimpleToDoList;
 import giraffe.repository.UserRepository;
 import giraffe.repository.simple.SimpleTaskRepository;
 import giraffe.repository.simple.SimpleToDoListRepository;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import giraffe.service.activity.TaskManagementService;
 import giraffe.service.activity.complex.GiraffeAccessDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,20 @@ public class SimpleTaskManagementService extends TaskManagementService<SimpleTas
             task.setParent(simpleTaskRepository.findByUuidAndStatus(parentUuid, GiraffeEntity.Status.ACTIVE));
 
         return simpleTaskRepository.save(task);
+    }
+
+    @Override
+    @Transactional(readOnly = true, rollbackFor = {GiraffeAccessDeniedException.class, NoActivityWithCurrentUuidException.class})
+    public SimpleTask findByUuid(String userUuid, String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+        SimpleTask task = simpleTaskRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
+
+        if(task == null) throw new NoActivityWithCurrentUuidException(uuid);
+
+        if (!task.getCreatedBy().getUuid().equals(userUuid)
+                || !task.getAssignedTo().getUuid().equals(userUuid))
+            throw new GiraffeAccessDeniedException(userUuid, task.getSimpleToDoList().getUuid());
+
+        return task;
     }
 
     @Transactional(readOnly = true)

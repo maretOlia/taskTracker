@@ -7,7 +7,7 @@ import giraffe.service.activity.complex.GiraffeAccessDeniedException;
  * @author Olga Gushchyna
  * @version 0.0.1
  */
-abstract public class TaskManagementService<T extends Task> {
+public abstract class TaskManagementService<T extends Task> extends ActivityManagementService<T>{
 
     public abstract Iterable<T> findByParent(String userUuid, String parentUuid) throws GiraffeAccessDeniedException;
 

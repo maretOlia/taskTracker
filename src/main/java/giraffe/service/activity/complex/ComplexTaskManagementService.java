@@ -13,6 +13,7 @@ import giraffe.repository.complex.ComplexTaskRepository;
 import giraffe.repository.complex.PeriodRepository;
 import giraffe.repository.complex.ProjectRepository;
 import giraffe.repository.complex.security.ProjectUserRightsRepository;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import giraffe.service.activity.TaskManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -149,6 +150,19 @@ public class ComplexTaskManagementService extends TaskManagementService<ComplexT
     private boolean isTimeScheduledAndPeriodConsistent(long timeScheduled, Period period) {
         return period.getTimeScheduledToStart() <= timeScheduled && timeScheduled <= period.getTimeScheduledToFinish();
 
+    }
+
+    @Override
+    @Transactional(readOnly = true, rollbackFor = {GiraffeAccessDeniedException.class, NoActivityWithCurrentUuidException.class})
+    public ComplexTask findByUuid(String userUuid, String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+        ComplexTask task = complexTaskRepository.findByUuidAndStatus(uuid, GiraffeEntity.Status.ACTIVE);
+
+        if(task == null) throw new NoActivityWithCurrentUuidException((uuid));
+
+        if (!hasRights(userUuid, task.getProject().getUuid(), Sets.newHashSet(ProjectUserRights.Rights.READ, ProjectUserRights.Rights.READ_WRITE)))
+            throw new GiraffeAccessDeniedException(userUuid, task.getProject().getUuid());
+
+        return task;
     }
 
     @Override

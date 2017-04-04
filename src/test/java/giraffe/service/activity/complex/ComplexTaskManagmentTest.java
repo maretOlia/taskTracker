@@ -10,6 +10,7 @@ import giraffe.domain.activity.complex.security.ProjectUserRights;
 import giraffe.repository.complex.PeriodRepository;
 import giraffe.repository.complex.ProjectRepository;
 import giraffe.repository.complex.security.ProjectUserRightsRepository;
+import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -83,6 +84,18 @@ public class ComplexTaskManagmentTest extends ComplexActivitiesManagementTestCas
                 2.0);
 
         assertThat(complexTaskRepository.findByUuidAndStatus(task.getUuid(), GiraffeEntity.Status.ACTIVE), is(equalTo(task)));
+    }
+
+    @Test
+    public void shouldFindByUuid() throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+        Project myProject = projectRepository.save(createBasicProject().setCreatedBy(user));
+        projectUserRightsRepository.save(createProjectUserRights(myProject, ProjectUserRights.Rights.READ));
+        ComplexTask task = createBasicTask()
+                .setCreatedBy(user)
+                .setProject(myProject);
+        complexTaskRepository.save(task);
+
+        assertThat(complexTaskManagementService.findByUuid(user.getUuid(), task.getUuid()), is(equalTo(task)));
     }
 
     @Test
@@ -286,6 +299,11 @@ public class ComplexTaskManagmentTest extends ComplexActivitiesManagementTestCas
         User otherUser = createUser("otherUser");
 
         complexTaskManagementService.findByParent(otherUser.getUuid(), parent.getUuid());
+    }
+
+    @Test(expected = NoActivityWithCurrentUuidException.class)
+    public void shouldThrowNoActivityWithCurrentUuidException() throws NoActivityWithCurrentUuidException, GiraffeAccessDeniedException {
+        complexTaskManagementService.findByUuid(user.getUuid(), "fake-uuid");
     }
 
 }
