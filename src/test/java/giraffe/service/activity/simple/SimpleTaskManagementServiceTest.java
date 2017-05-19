@@ -56,7 +56,6 @@ public class SimpleTaskManagementServiceTest extends SimpleActivitiesManagementT
         simpleTaskManagementService.updateOrCreate(user.getUuid(),
                 savedTask.setName("new Name")
                         .setTimeScheduled(savedTask.getTimeScheduled() + 30000)
-                        .setCreatedBy(null)
                         .setSimpleToDoList(null)
                         .setComment("comment")
                         .setTaskStatus(SimpleTask.TaskStatus.DONE),

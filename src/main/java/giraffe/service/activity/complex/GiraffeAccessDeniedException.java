@@ -9,7 +9,7 @@ import giraffe.domain.GiraffeException;
 public class GiraffeAccessDeniedException extends GiraffeException {
 
     public GiraffeAccessDeniedException(String userUuid, String projectUuid) {
-        super(String.format("User access to all project content denied.\\nUser \'uuid\': %s" + "\\nProject \'uuid\': %s",
+        super(String.format("User access to all project content denied. User \'uuid\': %s" + ". Project \'uuid\': %s",
                 userUuid, projectUuid));
     }
 

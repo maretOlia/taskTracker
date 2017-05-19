@@ -14,7 +14,7 @@ public class TimeScheduledAndPeriodInconsistencyException extends GiraffeExcepti
 
     @Override
     public Integer getErrorCode() {
-        return 1400;
+        return 1500;
     }
 
 }

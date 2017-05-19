@@ -57,11 +57,10 @@ public class PeriodController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.FOUND)
     @RequestMapping(
-            value = "",
-            params = {"uuid"},
+            value = "/{uuid}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    Period find(OAuth2Authentication auth, @PathVariable String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+    Period find(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -75,20 +74,20 @@ public class PeriodController {
             params = {"project-uuid"},
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    Iterable<Period> findByProject(OAuth2Authentication auth, @PathVariable(name = "project-uuid") String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+    Iterable<Period> findByProject(OAuth2Authentication auth, @RequestParam(name = "project-projectUuid") String projectUuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
-        return periodManagementService.findByProject(userUuid, uuid);
+        return periodManagementService.findByProject(userUuid, projectUuid);
     }
 
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(
-            value = "",
+            value = "/{uuid}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    Period delete(OAuth2Authentication auth, @RequestBody String uuid) throws GiraffeAccessDeniedException {
+    Period delete(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 

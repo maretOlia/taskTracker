@@ -1,6 +1,15 @@
-  jar {
+jar {
     baseName = 'giraffe.tracker'
     version = '0.0.1-SNAPSHOT'
+}
+sourceSets {
+    generated
+}
+
+sourceSets.generated.java.srcDirs = ['src/main/generated']
+
+configurations {
+    querydslapt
 }
 
 dependencies {

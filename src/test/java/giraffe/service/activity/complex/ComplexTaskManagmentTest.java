@@ -70,8 +70,7 @@ public class ComplexTaskManagmentTest extends ComplexActivitiesManagementTestCas
         complexTaskRepository.save(parent);
 
         task = complexTaskManagementService.updateOrCreate(user.getUuid(),
-                task.setCreatedBy(null)
-                        .setProject(null)
+                task.setProject(null)
                         .setName("testName")
                         .setPriority(ComplexTask.Priority.CRITICAL)
                         .setEstimate(2.00)

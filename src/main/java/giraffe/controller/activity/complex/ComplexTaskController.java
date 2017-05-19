@@ -1,10 +1,12 @@
 package giraffe.controller.activity.complex;
 
 import giraffe.domain.activity.complex.ComplexTask;
+import giraffe.service.activity.InvalidInputException;
 import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import giraffe.service.activity.complex.ComplexTaskManagementService;
 import giraffe.service.activity.complex.GiraffeAccessDeniedException;
 import giraffe.service.activity.complex.TimeScheduledAndPeriodInconsistencyException;
+import giraffe.utils.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,8 +14,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -37,7 +42,10 @@ public class ComplexTaskController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    ComplexTask create(OAuth2Authentication auth, @RequestBody ComplexTaskWrapper wrapper) throws GiraffeAccessDeniedException, TimeScheduledAndPeriodInconsistencyException {
+    ComplexTask create(OAuth2Authentication auth, @Valid ComplexTaskWrapper wrapper, BindingResult bindingResult) throws GiraffeAccessDeniedException, TimeScheduledAndPeriodInconsistencyException, InvalidInputException {
+
+        ValidationHelper.validateInputFields(bindingResult);
+
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -56,7 +64,10 @@ public class ComplexTaskController {
             value = "",
             method = RequestMethod.PATCH,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    ComplexTask update(OAuth2Authentication auth, @RequestBody ComplexTaskWrapper wrapper) throws GiraffeAccessDeniedException, TimeScheduledAndPeriodInconsistencyException {
+    ComplexTask update(OAuth2Authentication auth, @RequestBody @Valid ComplexTaskWrapper wrapper, BindingResult bindingResult) throws GiraffeAccessDeniedException, TimeScheduledAndPeriodInconsistencyException, InvalidInputException {
+
+        ValidationHelper.validateInputFields(bindingResult);
+
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -72,11 +83,10 @@ public class ComplexTaskController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.FOUND)
     @RequestMapping(
-            value = "",
-            params = {"uuid"},
+            value = "/{uuid}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    ComplexTask find(OAuth2Authentication auth, @PathVariable String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+    ComplexTask find(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -88,10 +98,10 @@ public class ComplexTaskController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(
-            value = "",
+            value = "/{uuid}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    ComplexTask delete(OAuth2Authentication auth, @RequestBody String uuid) throws GiraffeAccessDeniedException {
+    ComplexTask delete(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -100,12 +110,15 @@ public class ComplexTaskController {
 
     private static class ComplexTaskWrapper implements Serializable {
 
+        @NotNull
+        @Valid
         private ComplexTask task;
 
         private String parentUuid;
 
         private String assignedToUuid;
 
+        @NotNull
         private String projectUuid;
 
         private String periodUuid;

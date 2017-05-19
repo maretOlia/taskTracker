@@ -45,7 +45,7 @@ public class SimpleToDoListManagementTest extends SimpleActivitiesManagementTest
 
         myList.setComment("comment")
                 .setName("newName");
-        simpleToDoListManagementService.updateOrCreate(user.getUuid(), myList.setCreatedBy(null));
+        simpleToDoListManagementService.updateOrCreate(user.getUuid(), myList);
 
         assertThat(simpleToDoListRepository.findByUuidAndStatus(myList.getUuid(), GiraffeEntity.Status.ACTIVE), is(equalTo(myList)));
     }

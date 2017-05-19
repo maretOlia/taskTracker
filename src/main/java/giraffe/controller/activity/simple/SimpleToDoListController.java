@@ -57,11 +57,10 @@ public class SimpleToDoListController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.FOUND)
     @RequestMapping(
-            value = "",
-            params = {"uuid"},
+            value = "/{uuid}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    SimpleToDoList find(OAuth2Authentication auth, @PathVariable String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+    SimpleToDoList find(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -84,10 +83,10 @@ public class SimpleToDoListController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(
-            value = "",
+            value = "/{uuid}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    SimpleToDoList delete(OAuth2Authentication auth, @RequestBody String uuid) throws GiraffeAccessDeniedException {
+    SimpleToDoList delete(OAuth2Authentication auth,  @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 

@@ -58,11 +58,10 @@ public class ProjectController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.FOUND)
     @RequestMapping(
-            value = "",
-            params = {"uuid"},
+            value = "/{uuid}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    Project find(OAuth2Authentication auth, @PathVariable String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+    Project find(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -85,8 +84,7 @@ public class ProjectController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(
-            value = "",
-            params = {"uuid", "user-uuid"},
+            value = "/add-rights",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE)
     Project addRights(OAuth2Authentication auth, @RequestBody UserRightsWrapper wrapper) throws GiraffeAccessDeniedException {
@@ -99,10 +97,10 @@ public class ProjectController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(
-            value = "",
+            value = "/{uuid}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    Project delete(OAuth2Authentication auth, @RequestBody String uuid) throws GiraffeAccessDeniedException {
+    Project delete(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 

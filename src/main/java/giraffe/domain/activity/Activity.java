@@ -4,6 +4,8 @@ import giraffe.domain.GiraffeEntity;
 import giraffe.domain.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Guschcyna Olga
@@ -12,13 +14,15 @@ import javax.persistence.*;
 @MappedSuperclass
 public abstract class Activity<T extends Activity> extends GiraffeEntity<T> {
 
+    @NotNull
+    @Size(min=2, max=30)
     @Column(nullable = false)
     protected String name;
 
     protected String comment; // TODO separate with additional DB storage
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "created_by_user_uuid", referencedColumnName = "uuid")
+    @JoinColumn(name = "created_by_user_uuid", referencedColumnName = "uuid", nullable = false)
     protected User createdBy;
 
     protected Activity() {

@@ -1,17 +1,22 @@
 package giraffe.controller.activity.simple;
 
 import giraffe.domain.activity.simple.SimpleTask;
+import giraffe.service.activity.InvalidInputException;
 import giraffe.service.activity.NoActivityWithCurrentUuidException;
 import giraffe.service.activity.complex.GiraffeAccessDeniedException;
 import giraffe.service.activity.simple.SimpleTaskManagementService;
+import giraffe.utils.ValidationHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -29,7 +34,10 @@ public class SimpleTaskController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    SimpleTask create(OAuth2Authentication auth, @RequestBody SimpleTaskWrapper wrapper) throws GiraffeAccessDeniedException {
+    SimpleTask create(OAuth2Authentication auth, @RequestBody @Valid SimpleTaskWrapper wrapper, BindingResult bindingResult) throws GiraffeAccessDeniedException, InvalidInputException {
+
+        ValidationHelper.validateInputFields(bindingResult);
+
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -46,7 +54,10 @@ public class SimpleTaskController {
             value = "",
             method = RequestMethod.PATCH,
             produces = MediaType.APPLICATION_JSON_VALUE)
-        SimpleTask update(OAuth2Authentication auth, @RequestBody SimpleTaskWrapper wrapper) throws GiraffeAccessDeniedException {
+    SimpleTask update(OAuth2Authentication auth, @RequestBody @Valid SimpleTaskWrapper wrapper, BindingResult bindingResult) throws GiraffeAccessDeniedException, InvalidInputException {
+
+        ValidationHelper.validateInputFields(bindingResult);
+
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -60,11 +71,10 @@ public class SimpleTaskController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.FOUND)
     @RequestMapping(
-            value = "",
-            params = {"uuid"},
+            value = "/{uuid}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    SimpleTask find(OAuth2Authentication auth, @PathVariable String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
+    SimpleTask find(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException, NoActivityWithCurrentUuidException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -76,10 +86,10 @@ public class SimpleTaskController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(
-            value = "",
+            value = "/{uuid}",
             method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    SimpleTask delete(OAuth2Authentication auth, @RequestBody String uuid) throws GiraffeAccessDeniedException {
+    SimpleTask delete(OAuth2Authentication auth, @PathVariable("uuid") String uuid) throws GiraffeAccessDeniedException {
         OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
         String userUuid = tokenStore.readAccessToken(details.getTokenValue()).getAdditionalInformation().get("user_uuid").toString();
 
@@ -88,12 +98,15 @@ public class SimpleTaskController {
 
     private static class SimpleTaskWrapper implements Serializable {
 
+        @NotNull
+        @Valid
         private SimpleTask task;
 
         private String parentUuid;
 
         private String assignedToUuid;
 
+        @NotNull
         private String simpleToDoListUuid;
 
         public SimpleTaskWrapper() {

@@ -9,12 +9,12 @@ import giraffe.domain.GiraffeException;
 public class NoActivityWithCurrentUuidException extends GiraffeException {
 
     public NoActivityWithCurrentUuidException(String uuid) {
-        super(String.format("Provided uuid isn't related to any 'ACTIVE' activity. \\nProvided uuid: %s", uuid));
+        super(String.format("Provided uuid isn't related to any 'ACTIVE' activity. Provided uuid: %s", uuid));
     }
 
     @Override
     public Integer getErrorCode() {
-        return 1420;
+        return 1300;
     }
 
 }
